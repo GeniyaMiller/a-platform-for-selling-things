@@ -1,9 +1,9 @@
-package ru.skypro.homework.dto;
+package ru.skypro.homework.dto.profile;
 
 import lombok.Data;
 
 @Data
-public class User {
+public class UserDto {
 
     private int id;
 
@@ -17,7 +17,9 @@ public class User {
 
     private String image;
 
-    public User(int id, String email, String firstName, String lastName, String phone, String image) {
+
+
+    public UserDto(int id, String email, String firstName, String lastName, String phone, String image) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;

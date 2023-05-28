@@ -1,8 +1,8 @@
-package ru.skypro.homework.dto;
+package ru.skypro.homework.dto.ads;
 
 import lombok.Data;
+import ru.skypro.homework.dto.ads.Ads;
 
-import java.lang.reflect.Array;
 @Data
 public class ResponseWrapperAds {
 
