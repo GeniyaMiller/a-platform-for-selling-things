@@ -10,5 +10,8 @@ public interface AuthService {
     boolean register(RegisterReq registerReq, Role role);
 
 
-    void isAuthorized(User user, Authentication authentication);
+    boolean isAuthorized(User user, Authentication authentication);
+    boolean isAuthorized( Authentication authentication);
+
+    void changePassword(String oldPassword, String newPassword, Authentication authentication);
 }

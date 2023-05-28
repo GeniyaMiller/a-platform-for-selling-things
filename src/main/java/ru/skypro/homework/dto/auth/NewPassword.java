@@ -2,10 +2,10 @@ package ru.skypro.homework.dto.auth;
 
 import lombok.Data;
 
-
+@Data
 public class NewPassword {
-    private String currentPassword;
-    private String newPassword;
+    public String currentPassword;
+    public String newPassword;
 
     public NewPassword(String currentPassword, String newPassword) {
         this.currentPassword = currentPassword;

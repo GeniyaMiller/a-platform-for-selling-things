@@ -1,5 +1,7 @@
 package ru.skypro.homework.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +18,7 @@ public class AuthServiceImpl implements AuthService {
   private final UserDetailsManager manager;
 
   private final PasswordEncoder encoder;
-
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
   public AuthServiceImpl(UserDetailsManager manager, PasswordEncoder passwordEncoder) {
     this.manager = manager;
     this.encoder = passwordEncoder;
@@ -48,13 +50,23 @@ public class AuthServiceImpl implements AuthService {
   /**
    * Проверка авторизации текущего пользователя
    *
-   * @param user текущий пользователь {@link ru.skypro.homework.model.User}
    * @return true если авторизован {@link boolean}
    */
+  // дописывать
   @Override
-  public void isAuthorized(ru.skypro.homework.model.User user, Authentication authentication) {
-
+  public boolean isAuthorized(ru.skypro.homework.model.User user, Authentication authentication) {
+    return false;
+  }
+  // дописывать
+  @Override
+  public boolean isAuthorized(Authentication authentication) {
+    return false;
   }
 
-
+  @Override
+  public void changePassword(String oldPassword, String newPassword, Authentication authentication) {
+    log.info("changePassword " );
+    isAuthorized(authentication);
+    manager.changePassword(oldPassword, newPassword);
+  }
 }
