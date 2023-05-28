@@ -12,7 +12,7 @@ import ru.skypro.homework.dto.profile.UserDto;
 import ru.skypro.homework.model.User;
 import ru.skypro.homework.repository.UserRepository;
 
-import java.util.Optional;
+
 
 
 @Service
@@ -26,7 +26,7 @@ public class UserService {
     public UserService(UserRepository userRepository, AuthService authService) {
         this.userRepository = userRepository;
         this.authService = authService;
-        this.passwordEncoder = new BCryptPasswordEncoder();;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
     /**
      * Возвращает пользователя по логину
@@ -61,8 +61,7 @@ public class UserService {
     public UserDto updateUser(UserDto userDTO, Authentication authentication) {
         String userName = authentication.getName();
         log.info("updateUser " + userName);
-        User user = userRepository.findByUsername(userName);
-
+        User user = userRepository.findFirstByUsername(userName).orElseThrow(() -> new UserNotFoundException());
         if (user == null) {
             throw new UserNotFoundException();
         }
@@ -70,8 +69,7 @@ public class UserService {
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setPhone(userDTO.getPhone());
-
-        User updateuser = userRepository.save(user);
-        return userToDto(updateuser);
+        User updateUser = userRepository.save(user);
+        return userToDto(updateUser);
     }
 }

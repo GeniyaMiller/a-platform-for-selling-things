@@ -53,16 +53,16 @@ public class UserController {
     /**
      * Метод обновляет данные пользователя
      *
-     * @param userDTO     дто-объект, содержащий данные для обновления пользователя {@link UserDto}
+     * @param userDto     дто-объект, содержащий данные для обновления пользователя {@link UserDto}
      * @return данные о пользователе в виде дто-объекта {@link UserDto}
      */
     @PatchMapping ("/me")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDTO, Authentication authentication) {
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Authentication authentication) {
         log.info("updateUser");
-        log.info("updateUser userDTO userName " + userDTO.getEmail() + " " + userDTO.getFirstName());
+        log.info("updateUser userDTO userName " + userDto.getEmail() + " " + userDto.getFirstName());
         log.info("updateUser authentication.getName " + authentication.getName());
-        UserDto updatedDTO = userService.updateUser(userDTO, authentication);
-        return ResponseEntity.ok(updatedDTO);
+        UserDto updatedDto = userService.updateUser(userDto, authentication);
+        return ResponseEntity.ok(updatedDto);
     }
 
 }
