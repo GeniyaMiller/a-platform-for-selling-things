@@ -10,13 +10,13 @@ public class Comment {
 
     private String authorFirstName;
 
-    private int createdAt;
+    private long createdAt;
 
     private int pk;
 
     private String text;
 
-    public Comment(int author, String authorImage, String authorFirstName, int createdAt, int pk, String text) {
+    public Comment(int author, String authorImage, String authorFirstName, long createdAt, int pk, String text) {
         this.author = author;
         this.authorImage = authorImage;
         this.authorFirstName = authorFirstName;
