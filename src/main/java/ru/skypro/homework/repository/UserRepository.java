@@ -6,5 +6,7 @@ import org.springframework.security.core.userdetails.User;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User,Long> {
-    Optional<ru.skypro.homework.model.User> findFirstByUsername(String name);
+    public Optional<User> findFirstByUsername(String username);
+
+    ru.skypro.homework.model.User findByUsername(String name);
 }

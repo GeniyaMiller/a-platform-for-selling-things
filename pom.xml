@@ -10,7 +10,7 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>ru.skypro</groupId>
-  <artifactId>ads</artifactId>
+  <artifactId>diplom</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Ads application</name>
   <description>Application for managing ads</description>

@@ -45,6 +45,16 @@ public class AuthServiceImpl implements AuthService {
             .build());
     return true;
   }
+  /**
+   * Проверка авторизации текущего пользователя
+   *
+   * @param user текущий пользователь {@link ru.skypro.homework.model.User}
+   * @return true если авторизован {@link boolean}
+   */
+  @Override
+  public void isAuthorized(ru.skypro.homework.model.User user, Authentication authentication) {
+
+  }
 
 
 }

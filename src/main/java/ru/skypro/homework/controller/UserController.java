@@ -48,8 +48,21 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(Authentication authentication) {
         log.info("getUser");
         User user = userService.getUserByName(authentication.getName());
-        return ResponseEntity.ok(userService.userToDTO(user));
+        return ResponseEntity.ok(userService.userToDto(user));
     }
-
+    /**
+     * Метод обновляет данные пользователя
+     *
+     * @param userDTO     дто-объект, содержащий данные для обновления пользователя {@link UserDto}
+     * @return данные о пользователе в виде дто-объекта {@link UserDto}
+     */
+    @PatchMapping ("/me")
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDTO, Authentication authentication) {
+        log.info("updateUser");
+        log.info("updateUser userDTO userName " + userDTO.getEmail() + " " + userDTO.getFirstName());
+        log.info("updateUser authentication.getName " + authentication.getName());
+        UserDto updatedDTO = userService.updateUser(userDTO, authentication);
+        return ResponseEntity.ok(updatedDTO);
+    }
 
 }
