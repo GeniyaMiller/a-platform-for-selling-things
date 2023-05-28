@@ -46,10 +46,5 @@ public class AuthServiceImpl implements AuthService {
     return true;
   }
 
-  @Override
-  public void changePassword(String currentPassword, String newPassword, Authentication authentication) {
-    log.info("changePassword " );
-    isAuthorized(authentication);
-    userDetailsManager.changePassword(oldPassword, newPassword);
-  }
+
 }

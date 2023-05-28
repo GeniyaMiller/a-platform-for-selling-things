@@ -8,5 +8,5 @@ public interface AuthService {
     boolean login(String userName, String password);
     boolean register(RegisterReq registerReq, Role role);
 
-    void changePassword(String currentPassword, String newPassword, Authentication authentication);
+
 }
