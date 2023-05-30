@@ -1,5 +1,6 @@
 package ru.skypro.homework.controller;
 
+=======
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,7 +44,41 @@ public class AdsController {
         ResponseWrapperCommentDto comments = new ResponseWrapperCommentDto(adsService.getAdsComments(id));
         return ResponseEntity.ok(comments);
     }
+  
+    @GetMapping()
+    public ResponseEntity<ResponseWrapperAds> getAllAds(@RequestParam(required = false) String title) {
+        return null;
+    }
 
+    @PostMapping()
+    public ResponseEntity<Ads> addAds(@RequestPart("properties") CreateAds properties,
+                                      @RequestPart("image") MultipartFile image){
+        return null;
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer id) {
+        return null;
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> removeAd(@PathVariable("id") Integer id) {
+        return null;
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Ads> updateAds(@PathVariable("id") Integer id,
+                                         @RequestBody CreateAds createAds) {
+        return null;
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ResponseWrapperAds> getAdsMe() {
+        return null;
+    }
+
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> updateAdsImage(@PathVariable Integer id, @RequestParam MultipartFile image){
+        return null;
+    }
 }
