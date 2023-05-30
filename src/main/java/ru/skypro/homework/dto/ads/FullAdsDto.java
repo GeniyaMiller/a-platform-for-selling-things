@@ -3,7 +3,7 @@ package ru.skypro.homework.dto.ads;
 import lombok.Data;
 
 @Data
-public class FullAds {
+public class FullAdsDto {
 
     private int pk;
 
@@ -23,7 +23,7 @@ public class FullAds {
 
     private String title;
 
-    public FullAds(int pk, String authorFirstName, String authorLastName, String description, String email, String image, String phone, int price, String title) {
+    public FullAdsDto(int pk, String authorFirstName, String authorLastName, String description, String email, String image, String phone, int price, String title) {
         this.pk = pk;
         this.authorFirstName = authorFirstName;
         this.authorLastName = authorLastName;
