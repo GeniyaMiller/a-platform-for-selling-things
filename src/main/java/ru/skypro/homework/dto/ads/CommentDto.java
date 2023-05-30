@@ -3,7 +3,7 @@ package ru.skypro.homework.dto.ads;
 import lombok.Data;
 
 @Data
-public class Comment {
+public class CommentDto {
     private int author;
 
     private String authorImage;
@@ -16,7 +16,7 @@ public class Comment {
 
     private String text;
 
-    public Comment(int author, String authorImage, String authorFirstName, long createdAt, int pk, String text) {
+    public CommentDto(int author, String authorImage, String authorFirstName, long createdAt, int pk, String text) {
         this.author = author;
         this.authorImage = authorImage;
         this.authorFirstName = authorFirstName;
