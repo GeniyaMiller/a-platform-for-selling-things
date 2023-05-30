@@ -1,6 +1,7 @@
 package ru.skypro.homework.controller;
 
 <<<<<<< HEAD
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import ru.skypro.homework.dto.ads.Ads;
 import ru.skypro.homework.dto.ads.CreateAds;
 import ru.skypro.homework.dto.ads.FullAds;
 import ru.skypro.homework.dto.ads.ResponseWrapperAds;
+import ru.skypro.homework.service.AdsService;
 
 @Slf4j
 @RestController
@@ -54,18 +56,18 @@ public class AdsController {
     public ResponseEntity<byte[]> updateAdsImage(@PathVariable Integer id, @RequestParam MultipartFile image){
         return null;
     }
-=======
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.ads.CommentDto;
-import ru.skypro.homework.dto.ads.ResponseWrapperCommentDto;
-import ru.skypro.homework.service.AdsService;
+//=======
+//import io.swagger.v3.oas.annotations.Operation;
+//import io.swagger.v3.oas.annotations.media.Content;
+//import io.swagger.v3.oas.annotations.media.Schema;
+//import io.swagger.v3.oas.annotations.responses.ApiResponse;
+//import lombok.RequiredArgsConstructor;
+//import lombok.extern.slf4j.Slf4j;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.*;
+//import ru.skypro.homework.dto.ads.CommentDto;
+//import ru.skypro.homework.dto.ads.ResponseWrapperCommentDto;
+//import ru.skypro.homework.service.AdsService;
 
 @Slf4j
 @RestController
