@@ -3,7 +3,7 @@ package ru.skypro.homework.dto.ads;
 import lombok.Data;
 
 @Data
-public class Ads {
+public class AdsDto {
 
     private int author;
 
@@ -15,7 +15,7 @@ public class Ads {
 
     private String title;
 
-    public Ads(int author, String image, int pk, int price, String title) {
+    public AdsDto(int author, String image, int pk, int price, String title) {
         this.author = author;
         this.image = image;
         this.pk = pk;

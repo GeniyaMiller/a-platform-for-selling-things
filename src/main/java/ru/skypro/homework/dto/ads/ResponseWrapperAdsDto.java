@@ -1,16 +1,15 @@
 package ru.skypro.homework.dto.ads;
 
 import lombok.Data;
-import ru.skypro.homework.dto.ads.Ads;
 
 @Data
-public class ResponseWrapperAds {
+public class ResponseWrapperAdsDto {
 
     private int count;
 
-    private Ads[] result;
+    private AdsDto[] result;
 
-    public ResponseWrapperAds(int count, Ads[] result) {
+    public ResponseWrapperAdsDto(int count, AdsDto[] result) {
         this.count = count;
         this.result = result;
     }
