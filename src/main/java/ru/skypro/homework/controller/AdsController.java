@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.filters.AddDefaultCharsetFilter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.ads.*;
@@ -22,6 +24,7 @@ import ru.skypro.homework.service.AdsService;
 public class AdsController {
 
     private final AdsService adsService;
+
     /**
      * GET /ads/{id}/comments : getComments
      *
@@ -199,4 +202,91 @@ public class AdsController {
     public ResponseEntity<byte[]> updateAdsImage(@PathVariable Integer id, @RequestParam MultipartFile image){
         return null;
     }
+
+    /**
+     * POST /ads/{id}/comments : addComment
+     *
+     * @param id (required)
+     * @param comment (required)
+     * @return Ok (status code 200)
+     * or Not Found (status code 404)
+     * or Forbidden (status code 403)
+     * or Unauthorized (status code 401)
+     */
+    @Operation(
+            operationId = "addComment",
+            summary = "Добавить комментарий к объявлению",
+            tags = {"Комментарии"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = {
+                            @Content(mediaType = "*/*", schema = @Schema(implementation = CommentDto.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            }
+    )
+    @PostMapping("/{id}/comments")
+    public ResponseEntity<CommentDto> addComment (@PathVariable Integer id, @RequestBody CommentDto comment,
+                                                  Authentication authentication) {
+        return ResponseEntity.ok(adsService.addComment(id, comment, authentication));
+    }
+
+    /**
+     * DELETE /ads/{adId}/comments/{commentId} : deleteComment
+     *
+     * @param adId (required)
+     * @param commentId (required)
+     * @return Ok (status code 200)
+     * or Not Found (status code 404)
+     * or Forbidden (status code 403)
+     * or Unauthorized (status code 401)
+     */
+    @Operation(
+            operationId = "deleteComment",
+            summary = "Удалить комментарий к объявлению",
+            tags = {"Комментарии"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            }
+    )
+
+    @DeleteMapping("/{adId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment (@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId, Authentication authentication){
+       adsService.deleteComment(adId, commentId, authentication);
+       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * PATCH /ads/{adId}/comments/{commentId} : updateComment
+     *
+     * @param adId (required)
+     * @param commentId (required)
+     * @param comment (required)
+     * @return Ok (status code 200)
+     * or Not Found (status code 404)
+     * or Forbidden (status code 403)
+     * or Unauthorized (status code 401)
+     */
+    @Operation(
+            operationId = "updateComment",
+            summary = "Обновить комментарий к объявлению",
+            tags = {"Комментарии"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = {
+                            @Content(mediaType = "*/*", schema = @Schema(implementation = CommentDto.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            }
+    )
+    @PatchMapping("/{adId}/comments/{commentId}")
+    public ResponseEntity<CommentDto> updateComment (@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId, @RequestBody CommentDto comment, Authentication authentication) {
+        return ResponseEntity.ok(adsService.updateComment(adId, commentId, comment, authentication));
+    }
+
 }
