@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.springframework.http.HttpStatus;
@@ -15,15 +14,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.ads.*;
 import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.impl.AdsServiceImpl;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("/ads")
 public class AdsController {
 
-    private final AdsService adsService;
+    private final AdsServiceImpl adsService;
+
+    public AdsController(AdsServiceImpl adsService) {
+        this.adsService = adsService;
+    }
+
 
     /**
      * GET /ads/{id}/comments : getComments
@@ -206,7 +210,7 @@ public class AdsController {
     /**
      * POST /ads/{id}/comments : addComment
      *
-     * @param id (required)
+     * @param adsId (required)
      * @param comment (required)
      * @return Ok (status code 200)
      * or Not Found (status code 404)
@@ -226,16 +230,16 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PostMapping("/{id}/comments")
-    public ResponseEntity<CommentDto> addComment (@PathVariable Integer id, @RequestBody CommentDto comment,
+    @PostMapping("/{adsId}/comments")
+    public ResponseEntity<CommentDto> addComment (@PathVariable Integer adsId, @RequestBody CommentDto comment,
                                                   Authentication authentication) {
-        return ResponseEntity.ok(adsService.addComment(id, comment, authentication));
+        return ResponseEntity.ok(adsService.addComment(adsId, comment, authentication));
     }
 
     /**
      * DELETE /ads/{adId}/comments/{commentId} : deleteComment
      *
-     * @param adId (required)
+     * @param adsId (required)
      * @param commentId (required)
      * @return Ok (status code 200)
      * or Not Found (status code 404)
@@ -254,16 +258,16 @@ public class AdsController {
             }
     )
 
-    @DeleteMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment (@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId, Authentication authentication){
-       adsService.deleteComment(adId, commentId, authentication);
+    @DeleteMapping("/{adsId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, Authentication authentication){
+       adsService.deleteComment(adsId, commentId, authentication);
        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**
      * PATCH /ads/{adId}/comments/{commentId} : updateComment
      *
-     * @param adId (required)
+     * @param adsId (required)
      * @param commentId (required)
      * @param comment (required)
      * @return Ok (status code 200)
@@ -284,9 +288,9 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PatchMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<CommentDto> updateComment (@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId, @RequestBody CommentDto comment, Authentication authentication) {
-        return ResponseEntity.ok(adsService.updateComment(adId, commentId, comment, authentication));
+    @PatchMapping("/{adsId}/comments/{commentId}")
+    public ResponseEntity<CommentDto> updateComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, @RequestBody CommentDto comment, Authentication authentication) {
+        return ResponseEntity.ok(adsService.updateComment(adsId, commentId, comment, authentication));
     }
 
 }

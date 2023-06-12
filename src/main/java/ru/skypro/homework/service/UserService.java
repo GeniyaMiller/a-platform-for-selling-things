@@ -110,10 +110,10 @@ public class UserService {
     /**
      * Возвращает аватар пользователя
      *
-     * @param id первичный ключ пользователя {@link int}
+     * @param id первичный ключ пользователя {@link Integer}
      * @return аватар в двоичном формате
      */
-    public byte[] getAvatar(long id) {
+    public byte[] getAvatar(Integer id) {
         log.info("getAvatar " + id);
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
         return user.getAvatar();
