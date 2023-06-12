@@ -1,13 +1,20 @@
 package ru.skypro.homework.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import ru.skypro.homework.model.User;
 
 
 import java.util.Optional;
-
-public interface UserRepository extends JpaRepository<User,Long> {
+@Repository
+public interface UserRepository extends JpaRepository<User,Integer> {
     public Optional<User> findFirstByUsername(String username);
 
     ru.skypro.homework.model.User findByUsername(String name);
+
+    Integer getUserById(String name);
+
+    String getUserByFirstName(Integer id);
+
+    String getAvatarUserById(Integer userId);
 }
