@@ -2,27 +2,43 @@ package ru.skypro.homework.service.impl;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.Exception.AdsNotFoundException;
 import ru.skypro.homework.Exception.CommentNotFoundException;
+import ru.skypro.homework.Exception.UserNotFoundException;
+import ru.skypro.homework.dto.ads.AdsDto;
 import ru.skypro.homework.dto.ads.CommentDto;
+import ru.skypro.homework.dto.ads.CreateAdsDto;
+import ru.skypro.homework.dto.ads.FullAdsDto;
+import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.mapper.CommentMapper;
+import ru.skypro.homework.model.Ads;
 import ru.skypro.homework.model.Comment;
+import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AdsService;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 public class AdsServiceImpl implements AdsService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final AdsRepository adsRepository;
+    private final ImageServiceImpl imageService;
 
-    public AdsServiceImpl(CommentRepository commentRepository, UserRepository userRepository) {
+    public AdsServiceImpl(CommentRepository commentRepository, UserRepository userRepository, AdsRepository adsRepository, ImageServiceImpl imageService) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+        this.adsRepository = adsRepository;
+        this.imageService = imageService;
     }
 
     /**
@@ -88,5 +104,59 @@ public class AdsServiceImpl implements AdsService {
         comment.setText(comment.getText());
         CommentDto commentDto = CommentMapper.INSTANCE.commentToCommentDto(commentRepository.save(updateComment));
         return commentDto;
+    }
+
+    @Override
+    public AdsDto save(CreateAdsDto ads, Authentication authentication, MultipartFile image) throws IOException {
+        Ads newAds = AdsMapper.INSTANCE.createAdsToAds(ads);
+        newAds.setAuthor(userRepository.findByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new));
+        adsRepository.save(newAds);
+
+        imageService.updateAdsImage(newAds.getId(),image,authentication);
+
+        return AdsMapper
+                .INSTANCE
+                .adsToAdsDto(newAds);
+    }
+
+    @Override
+    public void removeAds(Integer adsId, Authentication authentication) {
+        adsRepository.deleteAllById(adsId);
+    }
+
+    @Override
+    public FullAdsDto getFullAds(Integer adsId) {
+        Ads ads = adsRepository.findById(adsId).orElseThrow(AdsNotFoundException::new);
+        return AdsMapper.INSTANCE.toFullAdsDto(ads);
+    }
+
+    @Override
+    public AdsDto updateAds(Integer id, CreateAdsDto updatedAds, Authentication authentication) {
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+
+        AdsMapper.INSTANCE.partialUpdate(updatedAds,ads);
+
+        return AdsMapper
+                .INSTANCE
+                .adsToAdsDto(adsRepository.save(ads));
+    }
+
+    @Override
+    public Collection<AdsDto> getAllAds(String title) {
+        Collection<Ads> ads;
+        if (!isEmpty(title)) {
+            ads = adsRepository.findByTitleContainsOrderByTitle(title);
+        } else {
+            ads = adsRepository.findAll();
+        }
+
+        return AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
+    }
+
+    @Override
+    public Collection<AdsDto> getAdsByUser(String email) {
+        int authorId = userRepository.getUserProfileId(email);
+        Collection<Ads> ads = adsRepository.findByAuthorId(authorId);
+        return AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
     }
 }

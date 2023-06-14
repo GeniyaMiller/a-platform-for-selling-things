@@ -16,6 +16,9 @@ import ru.skypro.homework.dto.ads.*;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.impl.AdsServiceImpl;
 
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+
 @Slf4j
 @RestController
 @CrossOrigin(value = "http://localhost:3000")
@@ -69,7 +72,8 @@ public class AdsController {
     )
     @GetMapping()
     public ResponseEntity<ResponseWrapperAdsDto> getAllAds(@RequestParam(required = false) String title) {
-        return null;
+        ResponseWrapperAdsDto ads = new ResponseWrapperAdsDto(adsService.getAllAds(title));
+        return ResponseEntity.ok(ads);
     }
 
     /**
@@ -96,9 +100,10 @@ public class AdsController {
             }
     )
     @PostMapping()
-    public ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAdsDto properties,
-                                         @RequestPart("image") MultipartFile image){
-        return null;
+    public ResponseEntity<AdsDto> addAds(@NotNull Authentication authentication,
+                                         @RequestPart("properties") CreateAdsDto properties,
+                                         @RequestPart("image") MultipartFile image) throws IOException {
+        return ResponseEntity.ok(adsService.save(properties,authentication, image));
     }
 
     /**
@@ -121,7 +126,7 @@ public class AdsController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<FullAdsDto> getAds(@PathVariable("id") Integer id) {
-        return null;
+        return ResponseEntity.ok(adsService.getFullAds(id));
     }
 
     /**
@@ -143,8 +148,9 @@ public class AdsController {
             }
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> removeAd(@PathVariable("id") Integer id) {
-        return null;
+    public ResponseEntity<?> removeAd(Authentication authentication, @PathVariable("id") Integer id) {
+        adsService.removeAds(id, authentication);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**
@@ -172,8 +178,9 @@ public class AdsController {
     )
     @PatchMapping("/{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable("id") Integer id,
-                                         @RequestBody CreateAdsDto createAds) {
-        return null;
+                                         @RequestBody CreateAdsDto createAds,
+                                            Authentication authentication) {
+        return ResponseEntity.ok(adsService.updateAds(id, createAds, authentication));
     }
 
     /**
@@ -198,8 +205,9 @@ public class AdsController {
             }
     )
     @GetMapping("/me")
-    public ResponseEntity<ResponseWrapperAdsDto> getAdsMe() {
-        return null;
+    public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
+        ResponseWrapperAdsDto ads = new  ResponseWrapperAdsDto(adsService.getAdsByUser(authentication.getName()));
+        return ResponseEntity.ok(ads);
     }
 
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
