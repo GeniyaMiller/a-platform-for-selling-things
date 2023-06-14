@@ -2,6 +2,8 @@ package ru.skypro.homework.dto.ads;
 
 import lombok.Data;
 
+import java.util.Collection;
+
 @Data
 public class ResponseWrapperAdsDto {
 
@@ -15,4 +17,6 @@ public class ResponseWrapperAdsDto {
     }
 
 
+    public ResponseWrapperAdsDto(Collection<AdsDto> allAds) {
+    }
 }
