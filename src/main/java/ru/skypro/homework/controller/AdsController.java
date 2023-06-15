@@ -25,9 +25,9 @@ import java.io.IOException;
 @RequestMapping("/ads")
 public class AdsController {
 
-    private final AdsServiceImpl adsService;
+    private final AdsService adsService;
 
-    public AdsController(AdsServiceImpl adsService) {
+    public AdsController(AdsService adsService) {
         this.adsService = adsService;
     }
 

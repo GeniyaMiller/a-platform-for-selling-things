@@ -16,7 +16,8 @@ public class ResponseWrapperAdsDto {
         this.result = result;
     }
 
-
+    public ResponseWrapperAdsDto() {
+    }
     public ResponseWrapperAdsDto(Collection<AdsDto> allAds) {
     }
 }
