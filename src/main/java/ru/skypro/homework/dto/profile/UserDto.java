@@ -18,14 +18,4 @@ public class UserDto {
     private String image;
 
 
-
-    public UserDto(int id, String email, String firstName, String lastName, String phone, String image) {
-        this.id = id;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phone = phone;
-        this.image = image;
-    }
-
 }
