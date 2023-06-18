@@ -6,11 +6,4 @@ import lombok.Data;
 public class NewPassword {
     public String currentPassword;
     public String newPassword;
-
-    public NewPassword(String currentPassword, String newPassword) {
-        this.currentPassword = currentPassword;
-        this.newPassword = newPassword;
     }
-
-
-}

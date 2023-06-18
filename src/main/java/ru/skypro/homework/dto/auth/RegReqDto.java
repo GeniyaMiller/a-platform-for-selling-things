@@ -4,14 +4,8 @@ import lombok.Data;
 import ru.skypro.homework.dto.profile.Role;
 
 @Data
-public class RegisterReq {
+public class RegReqDto {
     private String username;
     private String password;
-    private String firstName;
-    private String lastName;
-    private String phone;
     private Role role;
-
-
-
 }

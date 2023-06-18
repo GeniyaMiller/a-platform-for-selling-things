@@ -18,6 +18,7 @@ import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.ImageService;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -32,13 +33,15 @@ public class AdsServiceImpl implements AdsService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final AdsRepository adsRepository;
-    private final ImageServiceImpl imageService;
+    private final ImageService imageService;
+    private final CommentMapper commentMapper;
 
-    public AdsServiceImpl(CommentRepository commentRepository, UserRepository userRepository, AdsRepository adsRepository, ImageServiceImpl imageService) {
+    public AdsServiceImpl(CommentRepository commentRepository, UserRepository userRepository, AdsRepository adsRepository, ImageService imageService, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.adsRepository = adsRepository;
         this.imageService = imageService;
+        this.commentMapper = commentMapper;
     }
 
     /**

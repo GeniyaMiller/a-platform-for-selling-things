@@ -11,13 +11,5 @@ public class ResponseWrapperAdsDto {
 
     private AdsDto[] result;
 
-    public ResponseWrapperAdsDto(int count, AdsDto[] result) {
-        this.count = count;
-        this.result = result;
-    }
 
-    public ResponseWrapperAdsDto() {
-    }
-    public ResponseWrapperAdsDto(Collection<AdsDto> allAds) {
-    }
 }
