@@ -3,26 +3,22 @@ package ru.skypro.homework.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table (name = "Comments")
+@Table (name = "Comments", schema = "public")
 @Data
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @ManyToOne
     private User user;
     @ManyToOne
     private Ads ads;
-    private int authorId;
-    private String authorFirstName;
-    private String authorImage;
-    private int adsId;
+    private LocalDateTime createdAt;
     private String text;
 
-    private String createdAt;
-
-}
+    }

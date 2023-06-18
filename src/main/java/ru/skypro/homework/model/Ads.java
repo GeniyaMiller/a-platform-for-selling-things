@@ -7,15 +7,14 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "ads")
+@Table(name = "ads", schema = "public")
 @Data
 public class Ads {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne
     private User author;
 
     @Column(name = "title")
@@ -27,7 +26,6 @@ public class Ads {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "ads", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Image> images;
+    private String images;
 
 }

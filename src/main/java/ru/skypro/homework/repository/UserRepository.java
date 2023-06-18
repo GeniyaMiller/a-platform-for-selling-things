@@ -9,15 +9,7 @@ import ru.skypro.homework.model.User;
 import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
-    public Optional<User> findFirstByUsername(String username);
 
-    ru.skypro.homework.model.User findByUsername(String name);
-
-    Integer getUserById(String name);
-
-    String getUserByFirstName(Integer id);
-
-    String getAvatarUserById(Integer userId);
 
     Optional<User> findByEmail(String email);
 

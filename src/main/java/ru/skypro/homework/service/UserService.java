@@ -1,12 +1,7 @@
 package ru.skypro.homework.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
 import ru.skypro.homework.Exception.CurrentPasswordNotEqualsException;
 import ru.skypro.homework.Exception.UserAlreadyCreatedException;
 import ru.skypro.homework.Exception.UserNotFoundException;
@@ -20,15 +15,17 @@ import ru.skypro.homework.mapper.UserDtoMapper;
 import ru.skypro.homework.model.User;
 import ru.skypro.homework.repository.UserRepository;
 
-import java.io.IOException;
+
 import java.util.List;
-import java.util.Optional;
+
 
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+
     private final CreateUserDtoMapper createUserDtoMapper;
+
     private final UserDtoMapper userDtoMapper;
 
     public UserService(UserRepository userRepository, CreateUserDtoMapper createUserDtoMapper, UserDtoMapper userDtoMapper) {

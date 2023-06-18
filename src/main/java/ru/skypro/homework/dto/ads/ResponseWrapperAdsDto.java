@@ -11,5 +11,6 @@ public class ResponseWrapperAdsDto {
 
     private AdsDto[] result;
 
-
+    public ResponseWrapperAdsDto() {
+    }
 }
