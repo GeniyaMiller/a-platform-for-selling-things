@@ -13,7 +13,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AdsMapper {
-
+   AdsMapper INSTANCE = Mappers.getMapper(AdsMapper.class);
 
     @Mapping(target = "pk", source = "id")
     @Mapping(target = "author", source = "author.id")
