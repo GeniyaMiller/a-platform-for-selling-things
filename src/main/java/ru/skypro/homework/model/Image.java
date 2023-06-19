@@ -13,7 +13,7 @@ public class Image {
     @Column(name = "path")
     private String path;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private Ads ads;
 
     public Image(Integer id, String path, Ads ads) {

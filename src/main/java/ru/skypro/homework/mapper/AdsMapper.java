@@ -14,11 +14,12 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AdsMapper {
 
-
     @Mapping(target = "pk", source = "id")
     @Mapping(target = "author", source = "author.id")
-    @Mapping(target = "image", expression="java(mappedImages(ads))")
-    AdsDto adsToAdsDto(Ads ads);
+    @Mapping(target = "image", expression = "java(mappedImages(ads))")
+    static AdsDto adsToAdsDto(Ads ads) {
+        return null;
+    }
 
 
     @Mapping(target = "pk", source = "id")
@@ -26,22 +27,29 @@ public interface AdsMapper {
     @Mapping(target = "email", source = "author.email")
     @Mapping(target = "authorLastName", source = "author.lastName")
     @Mapping(target = "authorFirstName", source = "author.firstName")
-    @Mapping(target = "image", expression="java(mappedImages(ads))")
-    FullAdsDto toFullAdsDto(Ads ads);
+    @Mapping(target = "image", expression = "java(mappedImages(ads))")
+    static FullAdsDto toFullAdsDto(Ads ads) {
+        return null;
+    }
 
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    Ads createAdsToAds(CreateAdsDto createAdsDto);
+    static Ads createAdsToAds(CreateAdsDto createAdsDto) {
+        return null;
+    }
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    void partialUpdate(CreateAdsDto createAdsDto, @MappingTarget Ads ads);
+    static void partialUpdate(CreateAdsDto createAdsDto, @MappingTarget Ads ads) {
+    }
 
-    Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection);
+    static Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection) {
+        return null;
+    }
 
     default String mappedImages(Ads ads) {
-        List<Image> image= ads.getImages();
+        String image= ads.getImage();
         if (image == null||image.isEmpty()) {
             return null;
         }

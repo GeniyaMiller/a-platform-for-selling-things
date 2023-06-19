@@ -9,11 +9,8 @@ import java.util.Objects;
 public class Ads {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User author;
 
     @Column(name = "title")
     private String title;
@@ -24,38 +21,23 @@ public class Ads {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "ads", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Image> images;
+    @Column(name = "image")
+    private String image;
 
-    public Ads(Integer id, User author, String title, int price, String description, List<Image> images) {
-        this.id = id;
-        this.author = author;
-        this.title = title;
-        this.price = price;
-        this.description = description;
-        this.images = images;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User author;
 
-    public Ads() {
-
-    }
+    @OneToMany(mappedBy = "ads")
+    private List<Comment> comments;
 
 
     public Integer getId() {
         return id;
     }
 
-    @Id
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
     }
 
     public String getTitle() {
@@ -82,12 +64,28 @@ public class Ads {
         this.description = description;
     }
 
-    public List<Image> getImages() {
-        return images;
+    public String getImage() {
+        return image;
     }
 
-    public void setImages(List<Image> images) {
-        this.images = images;
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override
@@ -95,23 +93,24 @@ public class Ads {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ads ads = (Ads) o;
-        return getPrice() == ads.getPrice() && Objects.equals(getId(), ads.getId()) && Objects.equals(getAuthor(), ads.getAuthor()) && Objects.equals(getTitle(), ads.getTitle()) && Objects.equals(getDescription(), ads.getDescription()) && Objects.equals(getImages(), ads.getImages());
+        return getPrice() == ads.getPrice() && Objects.equals(getId(), ads.getId()) && Objects.equals(getTitle(), ads.getTitle()) && Objects.equals(getDescription(), ads.getDescription()) && Objects.equals(getImage(), ads.getImage()) && Objects.equals(getAuthor(), ads.getAuthor()) && Objects.equals(getComments(), ads.getComments());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getAuthor(), getTitle(), getPrice(), getDescription(), getImages());
+        return Objects.hash(getId(), getTitle(), getPrice(), getDescription(), getImage(), getAuthor(), getComments());
     }
 
     @Override
     public String toString() {
         return "Ads{" +
                 "id=" + id +
-                ", author=" + author +
                 ", title='" + title + '\'' +
                 ", price=" + price +
                 ", description='" + description + '\'' +
-                ", images=" + images +
+                ", image='" + image + '\'' +
+                ", author=" + author +
+                ", comments=" + comments +
                 '}';
     }
 }
