@@ -13,11 +13,11 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
     ru.skypro.homework.model.User findByUsername(String name);
 
-    Integer getUserById(String name);
+    User getUserById(String name);
 
-    String getUserByFirstName(Integer id);
+    User getUserByFirstName(User id);
 
-    String getAvatarUserById(Integer userId);
+    User getAvatarUserById(User userId);
 
     Optional<User> findByEmail(String email);
 

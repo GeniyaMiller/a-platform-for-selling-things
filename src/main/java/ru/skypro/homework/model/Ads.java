@@ -1,6 +1,7 @@
 package ru.skypro.homework.model;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,6 +24,9 @@ public class Ads {
 
     @Column(name = "description")
     private String description;
+
+    @OneToMany
+    private Collection<Comment> comments;
 
     @OneToMany(mappedBy = "ads", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Image> images;

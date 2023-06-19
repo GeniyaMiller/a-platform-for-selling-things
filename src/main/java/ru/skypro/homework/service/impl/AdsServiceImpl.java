@@ -14,10 +14,12 @@ import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.model.Ads;
 import ru.skypro.homework.model.Comment;
+import ru.skypro.homework.model.User;
 import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.ImageService;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -32,13 +34,16 @@ public class AdsServiceImpl implements AdsService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final AdsRepository adsRepository;
-    private final ImageServiceImpl imageService;
+    private final ImageService imageService;
 
-    public AdsServiceImpl(CommentRepository commentRepository, UserRepository userRepository, AdsRepository adsRepository, ImageServiceImpl imageService) {
+    private CommentMapper commentMapper;
+
+    public AdsServiceImpl(CommentRepository commentRepository, UserRepository userRepository, AdsRepository adsRepository, ImageService imageService, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.adsRepository = adsRepository;
         this.imageService = imageService;
+        this.commentMapper = commentMapper;
     }
 
     /**
@@ -48,10 +53,10 @@ public class AdsServiceImpl implements AdsService {
      * @return коллекция комментариев {@link CommentDto}
      */
     @Override
-    public Collection<CommentDto> getAdsComments(int adsId) {
+    public Collection<CommentDto> getAdsComments(Ads adsId) {
         Collection<Comment> comments = commentRepository.getByAdsId(adsId);
         return comments.stream()
-                .map(CommentMapper.INSTANCE::commentToCommentDto)
+                .map(commentMapper::commentToCommentDto)
                 .collect(Collectors.toSet());
     }
 
@@ -63,20 +68,20 @@ public class AdsServiceImpl implements AdsService {
      * @return добавленный комментарий {@link CommentDto}
      */
     @Override
-    public CommentDto addComment(Integer adsId, CommentDto comment, Authentication authentication) {
+    public CommentDto addComment(Ads adsId, CommentDto comment, Authentication authentication) {
 
-        Integer userId = userRepository.getUserById(authentication.getName());
-        String authorFirstName = userRepository.getUserByFirstName(userId);
-        String avatar = userRepository.getAvatarUserById(userId);
-        Comment newComment = CommentMapper.INSTANCE.commentDtoToComment(comment);
+        User userId = userRepository.getUserById(authentication.getName());
+        User authorFirstName = userRepository.getUserByFirstName(userId);
+        User avatar = userRepository.getAvatarUserById(userId);
+        Comment newComment = commentMapper.commentDtoToComment(comment);
         newComment.setAdsId(adsId);
         newComment.setAuthorId(userId);
-        newComment.setCreatedAt(LocalDateTime.now().toString());
+        newComment.setCreatedAt(LocalDateTime.now());
         newComment.setAuthorFirstName(authorFirstName);
         newComment.setAuthorImage(avatar);
 
         commentRepository.save(newComment);
-        return CommentMapper.INSTANCE.commentToCommentDto(newComment);
+        return commentMapper.commentToCommentDto(newComment);
     }
 
     /**
@@ -86,7 +91,7 @@ public class AdsServiceImpl implements AdsService {
      * @param commentId идентификатор объявления {@link Integer}
      */
     @Override
-    public void deleteComment(Integer adsId, Integer commentId, Authentication authentication) {
+    public void deleteComment(Ads adsId, Integer commentId, Authentication authentication) {
         commentRepository.deleteByAdsIdAndId(adsId,commentId);
     }
 
@@ -98,11 +103,11 @@ public class AdsServiceImpl implements AdsService {
      * @param comment идентификатор объявления {@link CommentDto}
      */
     @Override
-    public CommentDto updateComment(Integer adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication) {
+    public CommentDto updateComment(Ads adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication) {
         Comment updateComment = commentRepository.getByAdsIdAndId(adsId, commentId).orElseThrow(CommentNotFoundException::new);
 
         comment.setText(comment.getText());
-        CommentDto commentDto = CommentMapper.INSTANCE.commentToCommentDto(commentRepository.save(updateComment));
+        CommentDto commentDto = commentMapper.commentToCommentDto(commentRepository.save(updateComment));
         return commentDto;
     }
 

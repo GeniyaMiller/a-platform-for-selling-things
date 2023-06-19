@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.ads.*;
+import ru.skypro.homework.model.Ads;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.impl.AdsServiceImpl;
 
@@ -51,7 +52,7 @@ public class AdsController {
             }
     )
     @GetMapping("/{id}/comments")
-    public ResponseEntity<ResponseWrapperCommentDto> getComments(@PathVariable("id") int id) {
+    public ResponseEntity<ResponseWrapperCommentDto> getComments(@PathVariable("id") Ads id) {
         ResponseWrapperCommentDto comments = new ResponseWrapperCommentDto(adsService.getAdsComments(id));
         return ResponseEntity.ok(comments);
     }
@@ -239,7 +240,7 @@ public class AdsController {
             }
     )
     @PostMapping("/{adsId}/comments")
-    public ResponseEntity<CommentDto> addComment (@PathVariable Integer adsId, @RequestBody CommentDto comment,
+    public ResponseEntity<CommentDto> addComment (@PathVariable Ads adsId, @RequestBody CommentDto comment,
                                                   Authentication authentication) {
         return ResponseEntity.ok(adsService.addComment(adsId, comment, authentication));
     }
@@ -267,7 +268,7 @@ public class AdsController {
     )
 
     @DeleteMapping("/{adsId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, Authentication authentication){
+    public ResponseEntity<Void> deleteComment (@PathVariable("adsId") Ads adsId, @PathVariable("commentId") Integer commentId, Authentication authentication){
        adsService.deleteComment(adsId, commentId, authentication);
        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -297,7 +298,7 @@ public class AdsController {
             }
     )
     @PatchMapping("/{adsId}/comments/{commentId}")
-    public ResponseEntity<CommentDto> updateComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, @RequestBody CommentDto comment, Authentication authentication) {
+    public ResponseEntity<CommentDto> updateComment (@PathVariable("adsId") Ads adsId, @PathVariable("commentId") Integer commentId, @RequestBody CommentDto comment, Authentication authentication) {
         return ResponseEntity.ok(adsService.updateComment(adsId, commentId, comment, authentication));
     }
 

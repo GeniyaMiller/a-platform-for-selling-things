@@ -6,6 +6,7 @@ import ru.skypro.homework.dto.ads.AdsDto;
 import ru.skypro.homework.dto.ads.CommentDto;
 import ru.skypro.homework.dto.ads.CreateAdsDto;
 import ru.skypro.homework.dto.ads.FullAdsDto;
+import ru.skypro.homework.model.Ads;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -13,12 +14,12 @@ import java.lang.reflect.AnnotatedArrayType;
 import java.util.Collection;
 
 public interface AdsService {
-    Collection<CommentDto> getAdsComments(int adsId);
+    Collection<CommentDto> getAdsComments(Ads adsId);
 
-    CommentDto addComment(Integer adsId, CommentDto comment, Authentication authentication);
-    void deleteComment(Integer adsId, Integer commentId, Authentication authentication);
+    CommentDto addComment(Ads adsId, CommentDto comment, Authentication authentication);
+    void deleteComment(Ads adsId, Integer commentId, Authentication authentication);
 
-    CommentDto updateComment(Integer adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication);
+    CommentDto updateComment(Ads adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication);
 
 
     AdsDto save(CreateAdsDto ads, Authentication authentication, MultipartFile photo) throws IOException;

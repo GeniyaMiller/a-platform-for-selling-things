@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 @Entity
@@ -37,6 +38,8 @@ public class User {
      * аватар пользователя
      */
     private byte[] avatar;
+    @OneToMany
+    private Collection<Comment> comments;
     protected User() {
     }
 
