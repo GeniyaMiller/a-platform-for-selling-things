@@ -7,8 +7,8 @@ import ru.skypro.homework.model.User;
 
 @Mapper(componentModel = "spring")
 public interface CreateUserDtoMapper {
-    @Mapping(target = "password", ignore = true)
     @Mapping(target = "id", ignore = true)
     User toModel(CreateUserDto dto);
     CreateUserDto toDto(User entity);
 }
+
