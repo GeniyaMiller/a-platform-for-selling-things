@@ -14,12 +14,12 @@ import java.lang.reflect.AnnotatedArrayType;
 import java.util.Collection;
 
 public interface AdsService {
-    Collection<CommentDto> getAdsComments(Ads adsId);
+    Collection<CommentDto> getAdsComments(Integer adsId);
 
-    CommentDto addComment(Ads adsId, CommentDto comment, Authentication authentication);
-    void deleteComment(Ads adsId, Integer commentId, Authentication authentication);
+    CommentDto addComment(Integer adsId, CommentDto comment, Authentication authentication);
+    void deleteComment(Integer adsId, Integer commentId, Authentication authentication);
 
-    CommentDto updateComment(Ads adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication);
+    CommentDto updateComment(Integer adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication);
 
 
     AdsDto save(CreateAdsDto ads, Authentication authentication, MultipartFile photo) throws IOException;

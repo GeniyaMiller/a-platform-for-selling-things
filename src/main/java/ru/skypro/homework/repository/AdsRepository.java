@@ -18,4 +18,6 @@ public interface AdsRepository extends JpaRepository<Ads, Integer> {
     Collection<Ads> findByAuthorId(int authorId);
 
     void deleteAllById(Integer adsId);
+
+    Ads getAdsById(Integer adsId);
 }

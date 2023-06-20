@@ -53,8 +53,9 @@ public class AdsServiceImpl implements AdsService {
      * @return коллекция комментариев {@link CommentDto}
      */
     @Override
-    public Collection<CommentDto> getAdsComments(Ads adsId) {
-        Collection<Comment> comments = commentRepository.getByAdsId(adsId);
+    public Collection<CommentDto> getAdsComments(Integer adsId) {
+        Ads ads = adsRepository.getAdsById(adsId);
+        Collection<Comment> comments = commentRepository.getByAdsId(ads.getId());
         return comments.stream()
                 .map(commentMapper::commentToCommentDto)
                 .collect(Collectors.toSet());
@@ -68,18 +69,13 @@ public class AdsServiceImpl implements AdsService {
      * @return добавленный комментарий {@link CommentDto}
      */
     @Override
-    public CommentDto addComment(Ads adsId, CommentDto comment, Authentication authentication) {
-
+    public CommentDto addComment(Integer adsId, CommentDto comment, Authentication authentication) {
+        Ads ads = adsRepository.getAdsById(adsId);
         User userId = userRepository.getUserById(authentication.getName());
-        User authorFirstName = userRepository.getUserByFirstName(userId);
-        User avatar = userRepository.getAvatarUserById(userId);
         Comment newComment = commentMapper.commentDtoToComment(comment);
-        newComment.setAdsId(adsId);
+        newComment.setAdsId(ads);
         newComment.setAuthorId(userId);
         newComment.setCreatedAt(LocalDateTime.now());
-        newComment.setAuthorFirstName(authorFirstName);
-        newComment.setAuthorImage(avatar);
-
         commentRepository.save(newComment);
         return commentMapper.commentToCommentDto(newComment);
     }
@@ -91,8 +87,10 @@ public class AdsServiceImpl implements AdsService {
      * @param commentId идентификатор объявления {@link Integer}
      */
     @Override
-    public void deleteComment(Ads adsId, Integer commentId, Authentication authentication) {
-        commentRepository.deleteByAdsIdAndId(adsId,commentId);
+    public void deleteComment(Integer adsId, Integer commentId, Authentication authentication) {
+        Comment comment = commentRepository.getByAdsIdAndId(adsId, commentId)
+                .orElseThrow(CommentNotFoundException::new);
+        commentRepository.delete(comment);
     }
 
     /**
@@ -103,10 +101,10 @@ public class AdsServiceImpl implements AdsService {
      * @param comment идентификатор объявления {@link CommentDto}
      */
     @Override
-    public CommentDto updateComment(Ads adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication) {
+    public CommentDto updateComment(Integer adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication) {
         Comment updateComment = commentRepository.getByAdsIdAndId(adsId, commentId).orElseThrow(CommentNotFoundException::new);
-
-        comment.setText(comment.getText());
+        updateComment.setText(comment.getText());
+        updateComment.setCreatedAt(LocalDateTime.now());
         CommentDto commentDto = commentMapper.commentToCommentDto(commentRepository.save(updateComment));
         return commentDto;
     }

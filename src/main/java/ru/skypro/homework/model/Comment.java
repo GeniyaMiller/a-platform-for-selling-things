@@ -13,23 +13,16 @@ public class Comment {
     @ManyToOne
     private User authorId;
     @ManyToOne
-    private User authorFirstName;
-    @ManyToOne
-    private User authorImage;
-    @ManyToOne
     private Ads adsId;
     private String text;
-
     private LocalDateTime createdAt;
 
     public Comment() {
     }
 
-    public Comment(Integer id, User authorId, User authorFirstName, User authorImage, Ads adsId, String text, LocalDateTime createdAt) {
+    public Comment(Integer id, User authorId, Ads adsId, String text, LocalDateTime createdAt) {
         this.id = id;
         this.authorId = authorId;
-        this.authorFirstName = authorFirstName;
-        this.authorImage = authorImage;
         this.adsId = adsId;
         this.text = text;
         this.createdAt = createdAt;
@@ -49,22 +42,6 @@ public class Comment {
 
     public void setAuthorId(User authorId) {
         this.authorId = authorId;
-    }
-
-    public User getAuthorFirstName() {
-        return authorFirstName;
-    }
-
-    public void setAuthorFirstName(User authorFirstName) {
-        this.authorFirstName = authorFirstName;
-    }
-
-    public User getAuthorImage() {
-        return authorImage;
-    }
-
-    public void setAuthorImage(User authorImage) {
-        this.authorImage = authorImage;
     }
 
     public Ads getAdsId() {
@@ -101,8 +78,6 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", authorId=" + authorId +
-                ", authorFirstName='" + authorFirstName + '\'' +
-                ", authorImage='" + authorImage + '\'' +
                 ", adsId=" + adsId +
                 ", text='" + text + '\'' +
                 '}';

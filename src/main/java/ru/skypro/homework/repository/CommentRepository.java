@@ -11,9 +11,7 @@ import java.util.Optional;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    Collection<Comment> getByAdsId(Ads adsId);
+    Collection<Comment> getByAdsId(Integer adsId);
 
-    void deleteByAdsIdAndId(Ads adsId, Integer commentId);
-
-    Optional<Comment> getByAdsIdAndId(Ads adsId, Integer commentId);
+    Optional<Comment> getByAdsIdAndId(Integer adsId, Integer commentId);
 }
