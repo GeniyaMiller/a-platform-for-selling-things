@@ -11,4 +11,10 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,Integer> {
     int countByEmail(String email);
     Optional<User> findByEmail(String userName);
+
+    Integer getUserById(String name);
+
+    String getUserByFirstName(Integer userId);
+
+    String getAvatarUserById(Integer userId);
 }
