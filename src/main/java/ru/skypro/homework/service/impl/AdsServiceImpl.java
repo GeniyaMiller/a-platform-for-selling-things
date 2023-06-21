@@ -112,14 +112,13 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     public AdsDto save(CreateAdsDto ads, Authentication authentication, MultipartFile image) throws IOException {
-        Ads newAds = AdsMapper.createAdsToAds(ads);
+        Ads newAds = adsMapper.createAdsToAds(ads);
         newAds.setAuthor(userRepository.findByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new));
         adsRepository.save(newAds);
 
         imageService.updateAdsImage(newAds.getId(),image,authentication);
 
-        return AdsMapper
-                .adsToAdsDto(newAds);
+        return adsMapper.adsToAdsDto(newAds);
     }
 
     @Override
@@ -130,17 +129,16 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public FullAdsDto getFullAds(Integer adsId) {
         Ads ads = adsRepository.findById(adsId).orElseThrow(AdsNotFoundException::new);
-        return AdsMapper.toFullAdsDto(ads);
+        return adsMapper.toFullAdsDto(ads);
     }
 
     @Override
     public AdsDto updateAds(Integer id, CreateAdsDto updatedAds, Authentication authentication) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
 
-        AdsMapper.partialUpdate(updatedAds,ads);
+        adsMapper.partialUpdate(updatedAds,ads);
 
-        return AdsMapper
-                .adsToAdsDto(adsRepository.save(ads));
+        return adsMapper.adsToAdsDto(adsRepository.save(ads));
     }
 
     @Override
@@ -152,13 +150,13 @@ public class AdsServiceImpl implements AdsService {
             ads = adsRepository.findAll();
         }
 
-        return AdsMapper.adsCollectionToAdsDto(ads);
+        return adsMapper.adsCollectionToAdsDto(ads);
     }
 
     @Override
     public Collection<AdsDto> getAdsByUser(String email) {
         int authorId = userRepository.getUserProfileId(email);
         Collection<Ads> ads = adsRepository.findByAuthorId(authorId);
-        return AdsMapper.adsCollectionToAdsDto(ads);
+        return adsMapper.adsCollectionToAdsDto(ads);
     }
 }

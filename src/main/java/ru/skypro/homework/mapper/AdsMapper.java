@@ -17,9 +17,7 @@ public interface AdsMapper {
     @Mapping(target = "pk", source = "id")
     @Mapping(target = "author", source = "author.id")
     @Mapping(target = "image", expression = "java(mappedImages(ads))")
-    static AdsDto adsToAdsDto(Ads ads) {
-        return null;
-    }
+    AdsDto adsToAdsDto(Ads ads);
 
 
     @Mapping(target = "pk", source = "id")
@@ -28,25 +26,18 @@ public interface AdsMapper {
     @Mapping(target = "authorLastName", source = "author.lastName")
     @Mapping(target = "authorFirstName", source = "author.firstName")
     @Mapping(target = "image", expression = "java(mappedImages(ads))")
-    static FullAdsDto toFullAdsDto(Ads ads) {
-        return null;
-    }
+    FullAdsDto toFullAdsDto(Ads ads);
 
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    static Ads createAdsToAds(CreateAdsDto createAdsDto) {
-        return null;
-    }
+    Ads createAdsToAds(CreateAdsDto createAdsDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    static void partialUpdate(CreateAdsDto createAdsDto, @MappingTarget Ads ads) {
-    }
+    void partialUpdate(CreateAdsDto createAdsDto, @MappingTarget Ads ads);
 
-    static Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection) {
-        return null;
-    }
+    Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection);
 
     default String mappedImages(Ads ads) {
         String image= ads.getImage();
