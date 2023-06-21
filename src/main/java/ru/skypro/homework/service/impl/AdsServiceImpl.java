@@ -1,6 +1,5 @@
 package ru.skypro.homework.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +14,7 @@ import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.model.Ads;
 import ru.skypro.homework.model.Comment;
+import ru.skypro.homework.model.User;
 import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
@@ -35,14 +35,15 @@ public class AdsServiceImpl implements AdsService {
     private final UserRepository userRepository;
     private final AdsRepository adsRepository;
     private final ImageService imageService;
-    private final AdsMapper adsMapper;
 
-    public AdsServiceImpl(CommentRepository commentRepository, UserRepository userRepository, AdsRepository adsRepository, ImageService imageService, AdsMapper adsMapper) {
+    private CommentMapper commentMapper;
+
+    public AdsServiceImpl(CommentRepository commentRepository, UserRepository userRepository, AdsRepository adsRepository, ImageService imageService, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.adsRepository = adsRepository;
         this.imageService = imageService;
-        this.adsMapper = adsMapper;
+        this.commentMapper = commentMapper;
     }
 
     /**
@@ -52,10 +53,11 @@ public class AdsServiceImpl implements AdsService {
      * @return коллекция комментариев {@link CommentDto}
      */
     @Override
-    public Collection<CommentDto> getAdsComments(int adsId) {
-        Collection<Comment> comments = commentRepository.getByAdsId(adsId);
+    public Collection<CommentDto> getAdsComments(Integer adsId) {
+        Ads ads = adsRepository.getAdsById(adsId);
+        Collection<Comment> comments = commentRepository.getByAdsId(ads.getId());
         return comments.stream()
-                .map(CommentMapper.INSTANCE::commentToCommentDto)
+                .map(commentMapper::commentToCommentDto)
                 .collect(Collectors.toSet());
     }
 
@@ -68,19 +70,14 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public CommentDto addComment(Integer adsId, CommentDto comment, Authentication authentication) {
-
-        Integer userId = userRepository.getUserById(authentication.getName());
-        String authorFirstName = userRepository.getUserByFirstName(userId);
-        String avatar = userRepository.getAvatarUserById(userId);
-        Comment newComment = CommentMapper.INSTANCE.commentDtoToComment(comment);
-        newComment.setAdsId(adsId);
+        Ads ads = adsRepository.getAdsById(adsId);
+        User userId = userRepository.getUserById(authentication.getName());
+        Comment newComment = commentMapper.commentDtoToComment(comment);
+        newComment.setAdsId(ads);
         newComment.setAuthorId(userId);
-        newComment.setCreatedAt(LocalDateTime.now().toString());
-        newComment.setAuthorFirstName(authorFirstName);
-        newComment.setAuthorImage(avatar);
-
+        newComment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(newComment);
-        return CommentMapper.INSTANCE.commentToCommentDto(newComment);
+        return commentMapper.commentToCommentDto(newComment);
     }
 
     /**
@@ -91,7 +88,9 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public void deleteComment(Integer adsId, Integer commentId, Authentication authentication) {
-        commentRepository.deleteByAdsIdAndId(adsId,commentId);
+        Comment comment = commentRepository.getByAdsIdAndId(adsId, commentId)
+                .orElseThrow(CommentNotFoundException::new);
+        commentRepository.delete(comment);
     }
 
     /**
@@ -104,59 +103,38 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public CommentDto updateComment(Integer adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication) {
         Comment updateComment = commentRepository.getByAdsIdAndId(adsId, commentId).orElseThrow(CommentNotFoundException::new);
-
-        comment.setText(comment.getText());
-        CommentDto commentDto = CommentMapper.INSTANCE.commentToCommentDto(commentRepository.save(updateComment));
+        updateComment.setText(comment.getText());
+        CommentDto commentDto = commentMapper.commentToCommentDto(commentRepository.save(updateComment));
         return commentDto;
     }
 
     @Override
-    public AdsDto save(CreateAdsDto ads, Authentication authentication, MultipartFile image) throws IOException {
-        Ads newAds = adsMapper.createAdsToAds(ads);
-        newAds.setAuthor(userRepository.findByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new));
-        adsRepository.save(newAds);
-
-        imageService.updateAdsImage(newAds.getId(),image,authentication);
-
-        return adsMapper.adsToAdsDto(newAds);
+    public AdsDto save(CreateAdsDto ads, Authentication authentication, MultipartFile photo) throws IOException {
+        return null;
     }
 
     @Override
     public void removeAds(Integer adsId, Authentication authentication) {
-        adsRepository.deleteAllById(adsId);
+
     }
 
     @Override
     public FullAdsDto getFullAds(Integer adsId) {
-        Ads ads = adsRepository.findById(adsId).orElseThrow(AdsNotFoundException::new);
-        return adsMapper.toFullAdsDto(ads);
+        return null;
     }
 
     @Override
     public AdsDto updateAds(Integer id, CreateAdsDto updatedAds, Authentication authentication) {
-        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-
-        adsMapper.partialUpdate(updatedAds,ads);
-
-        return adsMapper.adsToAdsDto(adsRepository.save(ads));
+        return null;
     }
 
     @Override
     public Collection<AdsDto> getAllAds(String title) {
-        Collection<Ads> ads;
-        if (!isEmpty(title)) {
-            ads = adsRepository.findByTitleContainsOrderByTitle(title);
-        } else {
-            ads = adsRepository.findAll();
-        }
-
-        return adsMapper.adsCollectionToAdsDto(ads);
+        return null;
     }
 
     @Override
     public Collection<AdsDto> getAdsByUser(String email) {
-        int authorId = userRepository.getUserProfileId(email);
-        Collection<Ads> ads = adsRepository.findByAuthorId(authorId);
-        return adsMapper.adsCollectionToAdsDto(ads);
+        return null;
     }
 }
