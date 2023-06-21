@@ -1,5 +1,6 @@
 package ru.skypro.homework.service;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.Exception.CurrentPasswordNotEqualsException;
 import ru.skypro.homework.Exception.UserAlreadyCreatedException;
@@ -14,7 +15,9 @@ import ru.skypro.homework.mapper.UserDtoMapper;
 import ru.skypro.homework.model.User;
 import ru.skypro.homework.repository.UserRepository;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -22,17 +25,22 @@ public class UserService {
     private final UserRepository userRepository;
     private final CreateUserDtoMapper createUserDtoMapper;
     private final UserDtoMapper userDtoMapper;
+    private final FileService fileService;
 
-    public UserService(UserRepository userRepository, CreateUserDtoMapper createUserDtoMapper, UserDtoMapper userDtoMapper) {
+    public UserService(UserRepository userRepository,
+                       CreateUserDtoMapper createUserDtoMapper,
+                       UserDtoMapper userDtoMapper,
+                       FileService fileService) {
         this.userRepository = userRepository;
         this.createUserDtoMapper = createUserDtoMapper;
         this.userDtoMapper = userDtoMapper;
+        this.fileService = fileService;
     }
     public CreateUserDto createUser(CreateUserDto createUserDto) {
 
-        int countUser = userRepository.countByEmail(createUserDto.getEmail());
+        int countUser = userRepository.countByEmail(createUserDto.getUsername());
         if (countUser > 0) {
-            throw new UserAlreadyCreatedException(createUserDto.getEmail());
+            throw new UserAlreadyCreatedException(createUserDto.getUsername());
         }
 
         User user = createUserDtoMapper.toModel(createUserDto);
@@ -87,4 +95,44 @@ public class UserService {
                         .orElseThrow(UserNotFoundException::new)
         );
     }
+    public boolean login(
+            String username,
+            String password
+    ) {
+        User user = userRepository.findByEmailAndPassword(
+                username,
+                password
+        );
+
+        return null != user;
+    }
+    public boolean updateUserAvatarPath(
+            String userLogin,
+            String filePath
+    ) {
+        User user = getUserByLogin(userLogin);
+        Optional<String> optionalAvatar = Optional.ofNullable(user.getAvatar());
+
+        optionalAvatar.ifPresent(oldAvatar -> {
+                    if (!oldAvatar.isEmpty()) {
+                        try {
+                            fileService.removeFileByPath(oldAvatar);
+                        } catch (IOException ignored) {}
+                    }
+                }
+        );
+
+        user.setAvatar(filePath);
+
+        try {
+            userRepository.save(user);
+        } catch (DataAccessException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+
 }

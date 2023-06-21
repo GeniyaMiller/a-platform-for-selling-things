@@ -8,10 +8,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.skypro.homework.Exception.UserAlreadyCreatedException;
 import ru.skypro.homework.dto.auth.LoginReq;
 import ru.skypro.homework.dto.auth.RegisterReq;
+import ru.skypro.homework.dto.profile.CreateUserDto;
 import ru.skypro.homework.dto.profile.Role;
 import ru.skypro.homework.service.AuthService;
+import ru.skypro.homework.service.UserService;
 
 import static ru.skypro.homework.dto.profile.Role.USER;
 
@@ -21,11 +24,11 @@ import static ru.skypro.homework.dto.profile.Role.USER;
 @CrossOrigin(value = "http://localhost:3000")
 public class AuthController {
 
-    private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
-        if (authService.login(req.getUsername(), req.getPassword())) {
+        if (userService.login(req.getUsername(), req.getPassword())) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -33,12 +36,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterReq req) {
-        Role role = req.getRole() == null ? USER : req.getRole();
-        if (authService.register(req, role)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    public ResponseEntity<?> register( @RequestBody CreateUserDto createUserDto
+    ) {
+        try {
+            userService.createUser(createUserDto);
+            return ResponseEntity.ok()
+                    .build();
+        } catch (UserAlreadyCreatedException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
         }
     }
 }

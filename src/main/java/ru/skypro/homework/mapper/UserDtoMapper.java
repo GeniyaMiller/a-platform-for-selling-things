@@ -10,8 +10,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserDtoMapper {
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "avatar", source = "image")
     User toModel(UserDto dto);
-
+    @Mapping(target = "image", source = "avatar")
     UserDto toDto(User entity);
 
     List<UserDto> toUserDtoList(List<User> entityList);
