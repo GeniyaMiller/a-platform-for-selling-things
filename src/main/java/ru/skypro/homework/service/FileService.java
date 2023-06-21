@@ -1,8 +1,9 @@
 package ru.skypro.homework.service;
 
-import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.Exception.FileSizeLimitExceededExceptions;
 
@@ -12,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-
+@Service
 public class FileService {
     @Value("${uploaded.dir}")
     private String uploadedDir;
