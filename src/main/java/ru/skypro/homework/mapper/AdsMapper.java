@@ -14,10 +14,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AdsMapper {
 
-
     @Mapping(target = "pk", source = "id")
     @Mapping(target = "author", source = "author.id")
-    @Mapping(target = "image", expression="java(mappedImages(ads))")
+    @Mapping(target = "image", expression = "java(mappedImages(ads))")
     AdsDto adsToAdsDto(Ads ads);
 
 
@@ -26,7 +25,7 @@ public interface AdsMapper {
     @Mapping(target = "email", source = "author.email")
     @Mapping(target = "authorLastName", source = "author.lastName")
     @Mapping(target = "authorFirstName", source = "author.firstName")
-    @Mapping(target = "image", expression="java(mappedImages(ads))")
+    @Mapping(target = "image", expression = "java(mappedImages(ads))")
     FullAdsDto toFullAdsDto(Ads ads);
 
 
@@ -41,7 +40,7 @@ public interface AdsMapper {
     Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection);
 
     default String mappedImages(Ads ads) {
-        List<Image> image= ads.getImages();
+        String image= ads.getImage();
         if (image == null||image.isEmpty()) {
             return null;
         }
