@@ -1,7 +1,6 @@
 package ru.skypro.homework.model;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,11 +9,8 @@ import java.util.Objects;
 public class Ads {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User author;
 
     @Column(name = "title")
     private String title;
@@ -25,19 +21,24 @@ public class Ads {
     @Column(name = "description")
     private String description;
 
-    @OneToMany
-    private Collection<Comment> comments;
+    @Column(name = "image")
+    private String image;
 
-    @OneToMany(mappedBy = "ads", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Image> images;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User author;
 
-    public Ads(Integer id, User author, String title, int price, String description, List<Image> images) {
+    @OneToMany(mappedBy = "ads")
+    private List<Comment> comments;
+
+    public Ads(Integer id, User author, String title, int price, String description, String image, List<Comment> comments) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.price = price;
         this.description = description;
-        this.images = images;
+        this.image = image;
+        this.comments = comments;
     }
 
     public Ads() {
@@ -49,17 +50,8 @@ public class Ads {
         return id;
     }
 
-    @Id
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
     }
 
     public String getTitle() {
@@ -86,12 +78,28 @@ public class Ads {
         this.description = description;
     }
 
-    public List<Image> getImages() {
-        return images;
+    public String getImage() {
+        return image;
     }
 
-    public void setImages(List<Image> images) {
-        this.images = images;
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override
@@ -99,23 +107,24 @@ public class Ads {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ads ads = (Ads) o;
-        return getPrice() == ads.getPrice() && Objects.equals(getId(), ads.getId()) && Objects.equals(getAuthor(), ads.getAuthor()) && Objects.equals(getTitle(), ads.getTitle()) && Objects.equals(getDescription(), ads.getDescription()) && Objects.equals(getImages(), ads.getImages());
+        return getPrice() == ads.getPrice() && Objects.equals(getId(), ads.getId()) && Objects.equals(getTitle(), ads.getTitle()) && Objects.equals(getDescription(), ads.getDescription()) && Objects.equals(getImage(), ads.getImage()) && Objects.equals(getAuthor(), ads.getAuthor()) && Objects.equals(getComments(), ads.getComments());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getAuthor(), getTitle(), getPrice(), getDescription(), getImages());
+        return Objects.hash(getId(), getTitle(), getPrice(), getDescription(), getImage(), getAuthor(), getComments());
     }
 
     @Override
     public String toString() {
         return "Ads{" +
                 "id=" + id +
-                ", author=" + author +
                 ", title='" + title + '\'' +
                 ", price=" + price +
                 ", description='" + description + '\'' +
-                ", images=" + images +
+                ", image='" + image + '\'' +
+                ", author=" + author +
+                ", comments=" + comments +
                 '}';
     }
 }

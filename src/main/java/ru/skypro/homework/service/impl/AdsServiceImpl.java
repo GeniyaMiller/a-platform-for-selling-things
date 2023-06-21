@@ -104,62 +104,37 @@ public class AdsServiceImpl implements AdsService {
     public CommentDto updateComment(Integer adsId, Integer commentId, @NotNull CommentDto comment, Authentication authentication) {
         Comment updateComment = commentRepository.getByAdsIdAndId(adsId, commentId).orElseThrow(CommentNotFoundException::new);
         updateComment.setText(comment.getText());
-        updateComment.setCreatedAt(LocalDateTime.now());
         CommentDto commentDto = commentMapper.commentToCommentDto(commentRepository.save(updateComment));
         return commentDto;
     }
 
     @Override
-    public AdsDto save(CreateAdsDto ads, Authentication authentication, MultipartFile image) throws IOException {
-        Ads newAds = AdsMapper.INSTANCE.createAdsToAds(ads);
-        newAds.setAuthor(userRepository.findByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new));
-        adsRepository.save(newAds);
-
-        imageService.updateAdsImage(newAds.getId(),image,authentication);
-
-        return AdsMapper
-                .INSTANCE
-                .adsToAdsDto(newAds);
+    public AdsDto save(CreateAdsDto ads, Authentication authentication, MultipartFile photo) throws IOException {
+        return null;
     }
 
     @Override
     public void removeAds(Integer adsId, Authentication authentication) {
-        adsRepository.deleteAllById(adsId);
+
     }
 
     @Override
     public FullAdsDto getFullAds(Integer adsId) {
-        Ads ads = adsRepository.findById(adsId).orElseThrow(AdsNotFoundException::new);
-        return AdsMapper.INSTANCE.toFullAdsDto(ads);
+        return null;
     }
 
     @Override
     public AdsDto updateAds(Integer id, CreateAdsDto updatedAds, Authentication authentication) {
-        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-
-        AdsMapper.INSTANCE.partialUpdate(updatedAds,ads);
-
-        return AdsMapper
-                .INSTANCE
-                .adsToAdsDto(adsRepository.save(ads));
+        return null;
     }
 
     @Override
     public Collection<AdsDto> getAllAds(String title) {
-        Collection<Ads> ads;
-        if (!isEmpty(title)) {
-            ads = adsRepository.findByTitleContainsOrderByTitle(title);
-        } else {
-            ads = adsRepository.findAll();
-        }
-
-        return AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
+        return null;
     }
 
     @Override
     public Collection<AdsDto> getAdsByUser(String email) {
-        int authorId = userRepository.getUserProfileId(email);
-        Collection<Ads> ads = adsRepository.findByAuthorId(authorId);
-        return AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
+        return null;
     }
 }

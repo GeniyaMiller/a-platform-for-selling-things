@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.ads.*;
 import ru.skypro.homework.model.Ads;
 import ru.skypro.homework.service.AdsService;
-import ru.skypro.homework.service.impl.AdsServiceImpl;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
