@@ -1,6 +1,7 @@
 package ru.skypro.homework.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -9,58 +10,46 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int authorId;
-    private String authorFirstName;
-    private String authorImage;
-    private int adsId;
+    @ManyToOne
+    private User authorId;
+    @ManyToOne
+    private Ads adsId;
     private String text;
-
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     public Comment() {
     }
 
-    public Comment(Integer id, int authorId, String authorFirstName, String authorImage, int adsId, String text, String createdAt) {
+    public Comment(Integer id, User authorId, Ads adsId, String text, LocalDateTime createdAt) {
         this.id = id;
         this.authorId = authorId;
-        this.authorFirstName = authorFirstName;
-        this.authorImage = authorImage;
         this.adsId = adsId;
         this.text = text;
         this.createdAt = createdAt;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
     }
 
-    @Id
-    public Integer getId() {
-        return id;
-    }
-
-    public int getAuthorId() {
+    public User getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(int authorId) {
+    public void setAuthorId(User authorId) {
         this.authorId = authorId;
     }
 
-    public String getAuthorFirstName() {
-        return authorFirstName;
+    public Ads getAdsId() {
+        return adsId;
     }
 
-    public void setAuthorFirstName(String authorFirstName) {
-        this.authorFirstName = authorFirstName;
-    }
-
-    public String getAuthorImage() {
-        return authorImage;
-    }
-
-    public void setAuthorImage(String authorImage) {
-        this.authorImage = authorImage;
+    public void setAdsId(Ads adsId) {
+        this.adsId = adsId;
     }
 
     public String getText() {
@@ -69,14 +58,6 @@ public class Comment {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public int getAdsId() {
-        return adsId;
-    }
-
-    public void setAdsId(int adsId) {
-        this.adsId = adsId;
     }
 
     @Override
@@ -97,18 +78,16 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", authorId=" + authorId +
-                ", authorFirstName='" + authorFirstName + '\'' +
-                ", authorImage='" + authorImage + '\'' +
                 ", adsId=" + adsId +
                 ", text='" + text + '\'' +
                 '}';
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

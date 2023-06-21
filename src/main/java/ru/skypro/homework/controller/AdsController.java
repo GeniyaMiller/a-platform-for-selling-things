@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.ads.*;
+import ru.skypro.homework.model.Ads;
 import ru.skypro.homework.service.AdsService;
 
 import javax.validation.constraints.NotNull;
@@ -50,7 +51,7 @@ public class AdsController {
             }
     )
     @GetMapping("/{id}/comments")
-    public ResponseEntity<ResponseWrapperCommentDto> getComments(@PathVariable("id") int id) {
+    public ResponseEntity<ResponseWrapperCommentDto> getComments(@PathVariable("id") Integer id) {
         ResponseWrapperCommentDto comments = new ResponseWrapperCommentDto(adsService.getAdsComments(id));
         return ResponseEntity.ok(comments);
     }

@@ -31,6 +31,20 @@ public class Ads {
     @OneToMany(mappedBy = "ads")
     private List<Comment> comments;
 
+    public Ads(Integer id, User author, String title, int price, String description, String image, List<Comment> comments) {
+        this.id = id;
+        this.author = author;
+        this.title = title;
+        this.price = price;
+        this.description = description;
+        this.image = image;
+        this.comments = comments;
+    }
+
+    public Ads() {
+
+    }
+
 
     public Integer getId() {
         return id;
