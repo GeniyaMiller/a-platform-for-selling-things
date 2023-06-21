@@ -19,4 +19,6 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     String getAvatarUserById(Integer userId);
 
     User findByEmailAndPassword(String username, String password);
+
+    int getUserProfileId(String email);
 }
