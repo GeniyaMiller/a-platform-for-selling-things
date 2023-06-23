@@ -28,7 +28,7 @@ public class Ads {
     @JoinColumn(name = "user_id")
     private User author;
 
-    @OneToMany(mappedBy = "ads")
+    @OneToMany(mappedBy = "adsId")
     private List<Comment> comments;
 
     public Ads(Integer id, User author, String title, int price, String description, String image, List<Comment> comments) {

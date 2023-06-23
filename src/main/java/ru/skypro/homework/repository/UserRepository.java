@@ -18,8 +18,6 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
     String getAvatarUserById(Integer userId);
 
-    Optional<User> findByEmail(String email);
-
     @Query(nativeQuery = true, value = "select user_profile_id from profile_user where email like ?1")
     Integer getUserProfileId(String name);
     User findByEmailAndPassword(String username, String password);
