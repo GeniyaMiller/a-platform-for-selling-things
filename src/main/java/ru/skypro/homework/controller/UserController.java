@@ -98,7 +98,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", content = @Content())
             }
     )
-    @RolesAllowed("USER")
+    // @RolesAllowed("USER")
     public UserDto getMe(Authentication authentication) {
         try {
             return userService.getMeByLogin(authentication.getName());
@@ -116,7 +116,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", content = @Content())
             }
     )
-    @RolesAllowed({"USER"})
+    //@RolesAllowed({"USER"})
     public UserDto updateUser(@RequestBody UserDto updatedUser,Authentication authentication) {
         try {
             return userService.updateUser(
@@ -137,7 +137,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", content = @Content())
             }
     )
-    @RolesAllowed({"USER"})
+   // @RolesAllowed({"USER"})
     public NewPassword setPassword(
             @RequestBody NewPassword newPasswordDto,
             Authentication authentication
@@ -161,6 +161,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", content = @Content())
             }
     )
+    @RolesAllowed({"ADMIN"})
     public UserDto getUser(@PathVariable("id") int userId
     ) {
         try {
