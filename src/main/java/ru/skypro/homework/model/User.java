@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,4 +21,7 @@ public class User {
     private String lastName;
     private String phone;
     private String role = "USER";
+
+    @OneToMany(mappedBy = "authorId")
+    private List<Comment> comments;
 }
