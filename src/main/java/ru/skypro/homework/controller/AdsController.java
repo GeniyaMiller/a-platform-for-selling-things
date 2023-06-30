@@ -9,6 +9,7 @@ import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +52,7 @@ public class AdsController {
             }
     )
     @GetMapping("/{id}/comments")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseWrapperCommentDto> getComments(@PathVariable("id") Integer id) {
         ResponseWrapperCommentDto comments = new ResponseWrapperCommentDto(adsService.getAdsComments(id));
         return ResponseEntity.ok(comments);
@@ -239,6 +241,7 @@ public class AdsController {
             }
     )
     @PostMapping("/{adsId}/comments")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<CommentDto> addComment (@PathVariable Integer adsId, @RequestBody CommentDto comment,
                                                   Authentication authentication) {
         return ResponseEntity.ok(adsService.addComment(adsId, comment, authentication));
@@ -267,6 +270,7 @@ public class AdsController {
     )
 
     @DeleteMapping("/{adsId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, Authentication authentication){
        adsService.deleteComment(adsId, commentId, authentication);
        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -297,6 +301,7 @@ public class AdsController {
             }
     )
     @PatchMapping("/{adsId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<CommentDto> updateComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, @RequestBody CommentDto comment, Authentication authentication) {
         return ResponseEntity.ok(adsService.updateComment(adsId, commentId, comment, authentication));
     }
