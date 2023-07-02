@@ -7,13 +7,13 @@ import ru.skypro.homework.dto.ads.CreateAdsDto;
 import ru.skypro.homework.dto.ads.FullAdsDto;
 import ru.skypro.homework.model.Ads;
 import ru.skypro.homework.model.Image;
+import ru.skypro.homework.model.User;
 
 import java.util.Collection;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AdsMapper {
-
     @Mapping(target = "pk", source = "id")
     @Mapping(target = "author", source = "author.id")
     @Mapping(target = "image", expression = "java(mappedImages(ads))")
