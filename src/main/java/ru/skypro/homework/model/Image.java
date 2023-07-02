@@ -1,75 +1,51 @@
 package ru.skypro.homework.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
 @Table(name = "image")
 public class Image {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
-    @Column(name = "path")
-    private String path;
-
-    @OneToOne
-    private Ads ads;
-
-    public Image(Integer id, String path, Ads ads) {
-        this.id = id;
-        this.path = path;
-        this.ads = ads;
-    }
+    @Lob
+    @Column(name = "image")
+    @Type(type = "org.hibernate.type.BinaryType")
+    private byte[] data;
 
 
-    public Image() {
-
-    }
-
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getPath() {
-        return path;
+    public byte[] getData() {
+        return data;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public Ads getAds() {
-        return ads;
-    }
-
-    public void setAds(Ads ads) {
-        this.ads = ads;
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Image image = (Image) o;
-        return Objects.equals(getId(), image.getId()) && Objects.equals(getPath(), image.getPath()) && Objects.equals(getAds(), image.getAds());
+        Image that = (Image) o;
+        return Objects.equals(id, that.id) && Arrays.equals(data, that.data);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getPath(), getAds());
-    }
-
-    @Override
-    public String toString() {
-        return "Image{" +
-                "id=" + id +
-                ", path='" + path + '\'' +
-                ", ads=" + ads +
-                '}';
+        int result = Objects.hash(id);
+        result = 31 * result + Arrays.hashCode(data);
+        return result;
     }
 }

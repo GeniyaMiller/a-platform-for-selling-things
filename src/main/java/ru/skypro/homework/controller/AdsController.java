@@ -14,9 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.ads.*;
-import ru.skypro.homework.model.Ads;
 import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.ImageService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
@@ -27,9 +28,11 @@ import java.io.IOException;
 public class AdsController {
 
     private final AdsService adsService;
+    private final ImageService imageService;
 
-    public AdsController(AdsService adsService) {
+    public AdsController(AdsService adsService, ImageService imageService) {
         this.adsService = adsService;
+        this.imageService = imageService;
     }
 
 
@@ -102,6 +105,7 @@ public class AdsController {
             }
     )
     @PostMapping()
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<AdsDto> addAds(@NotNull Authentication authentication,
                                          @RequestPart("properties") CreateAdsDto properties,
                                          @RequestPart("image") MultipartFile image) throws IOException {
@@ -150,6 +154,7 @@ public class AdsController {
             }
     )
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> removeAd(Authentication authentication, @PathVariable("id") Integer id) {
         adsService.removeAds(id, authentication);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -179,8 +184,9 @@ public class AdsController {
             }
     )
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<AdsDto> updateAds(@PathVariable("id") Integer id,
-                                         @RequestBody CreateAdsDto createAds,
+                                            @Valid @RequestBody CreateAdsDto createAds,
                                             Authentication authentication) {
         return ResponseEntity.ok(adsService.updateAds(id, createAds, authentication));
     }
@@ -207,12 +213,19 @@ public class AdsController {
             }
     )
     @GetMapping("/me")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
         ResponseWrapperAdsDto ads = new  ResponseWrapperAdsDto(adsService.getAdsByUser(authentication.getName()));
         return ResponseEntity.ok(ads);
     }
 
+    @GetMapping(value = "/{id}/getImage", produces = {MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> getImage(@PathVariable int id) throws IOException {
+        return ResponseEntity.ok(imageService.getImage(id));
+    }
+
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<byte[]> updateAdsImage(@PathVariable Integer id, @RequestParam MultipartFile image){
         return null;
     }
