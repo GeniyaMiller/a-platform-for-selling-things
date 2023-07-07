@@ -9,6 +9,7 @@ import ru.skypro.homework.dto.profile.Role;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.model.User;
 import ru.skypro.homework.service.AuthService;
+
 import ru.skypro.homework.service.CustomUserDetailsService;
 import ru.skypro.homework.validator.Validator;
 
@@ -19,9 +20,9 @@ public class AuthServiceImpl implements AuthService {
 
   private final PasswordEncoder encoder;
 
-  public AuthServiceImpl(CustomUserDetailsService manager, PasswordEncoder passwordEncoder) {
+  public AuthServiceImpl(CustomUserDetailsService manager, PasswordEncoder encoder) {
     this.manager = manager;
-    this.encoder = passwordEncoder;
+    this.encoder = encoder;
   }
 
   @Override
