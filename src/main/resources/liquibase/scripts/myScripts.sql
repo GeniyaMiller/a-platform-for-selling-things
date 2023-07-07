@@ -4,26 +4,22 @@
 
 CREATE TABLE if not exists comments
 (
-   id           SERIAL NOT NULL PRIMARY KEY,
-   user_id      SERIAL,
-   ads_id       SERIAL,
-   text         TEXT,
-   createdAt    TIMESTAMP WITH TIME ZONE
+    pk         serial not null primary key,
+    created_at timestamp,
+    text       varchar(255),
+    ads_pk     integer
+        references public.ads,
+    author_id  integer
+        references public.users
 );
 
 -- changeset jk:2
 CREATE TABLE if not exists ads
 (
-    id           SERIAL NOT NULL PRIMARY KEY,
-    title        VARCHAR(255),
-    price        BIGINT NOT NULL,
-    desription   VARCHAR(255),
-    image        TEXT,
-    user_id      SERIAL
-);
-
-CREATE TABLE if not exists image
-(
-    id         VARCHAR(255) PRIMARY KEY,
-    image      bytea
+    pk          serial primary key,
+    author_id   integer references users (id),
+    title       varchar(100) not null,
+    description varchar(100) not null,
+    price       integer      not null,
+    image       bytea
 );

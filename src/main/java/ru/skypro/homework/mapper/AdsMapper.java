@@ -1,49 +1,37 @@
 package ru.skypro.homework.mapper;
 
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dto.ads.AdsDto;
 import ru.skypro.homework.dto.ads.CreateAdsDto;
 import ru.skypro.homework.dto.ads.FullAdsDto;
 import ru.skypro.homework.model.Ads;
-import ru.skypro.homework.model.Image;
-import ru.skypro.homework.model.User;
 
-import java.util.Collection;
-import java.util.List;
+public class AdsMapper {
+    public static AdsDto mapToDTO(Ads ads) {
+        AdsDto adsDto = new AdsDto();
+        adsDto.setPk(ads.getPk());
+        adsDto.setAuthor(ads.getAuthor().getId());
+        adsDto.setTitle(ads.getTitle());
+        adsDto.setPrice(ads.getPrice());
+        adsDto.setImage("/ads/image/" + ads.getPk());
+        return adsDto;
+    }
+    public static FullAdsDto mapToFullDTO(Ads ads) {
+        FullAdsDto fullAds = new FullAdsDto();
+        fullAds.setPk(ads.getPk());
+        fullAds.setTitle(ads.getTitle());
+        fullAds.setDescription(ads.getDescription());
+        fullAds.setPrice(ads.getPrice());
+        fullAds.setImage("/ads/image/" + ads.getPk());
+        fullAds.setEmail(ads.getAuthor().getUsername());
+        fullAds.setPhone(ads.getAuthor().getPhone());
+        return fullAds;
+    }
 
-@Mapper(componentModel = "spring")
-public interface AdsMapper {
-    @Mapping(target = "pk", source = "id")
-    @Mapping(target = "author", source = "author.id")
-    @Mapping(target = "image", expression = "java(mappedImages(ads))")
-    AdsDto adsToAdsDto(Ads ads);
-
-
-    @Mapping(target = "pk", source = "id")
-    @Mapping(target = "phone", source = "author.phone")
-    @Mapping(target = "email", source = "author.email")
-    @Mapping(target = "authorLastName", source = "author.lastName")
-    @Mapping(target = "authorFirstName", source = "author.firstName")
-    @Mapping(target = "image", expression = "java(mappedImages(ads))")
-    FullAdsDto toFullAdsDto(Ads ads);
-
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    Ads createAdsToAds(CreateAdsDto createAdsDto);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    void partialUpdate(CreateAdsDto createAdsDto, @MappingTarget Ads ads);
-
-    Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection);
-
-    default String mappedImages(Ads ads) {
-        String image= ads.getImage();
-        if (image == null||image.isEmpty()) {
-            return null;
-        }
-        return  "/ads/"+ads.getId()+"/getImage";
+    public static Ads mapFromCreateAds(CreateAdsDto createAds) {
+        Ads ads = new Ads();
+        ads.setTitle(createAds.getTitle());
+        ads.setDescription(createAds.getDescription());
+        ads.setPrice(createAds.getPrice());
+        return ads;
     }
 }

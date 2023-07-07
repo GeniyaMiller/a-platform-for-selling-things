@@ -1,72 +1,50 @@
 package ru.skypro.homework.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import ru.skypro.homework.Exception.NotFoundException;
 import ru.skypro.homework.dto.auth.RegisterReq;
 import ru.skypro.homework.dto.profile.Role;
+import ru.skypro.homework.mapper.UserMapper;
+import ru.skypro.homework.model.User;
 import ru.skypro.homework.service.AuthService;
+import ru.skypro.homework.service.CustomUserDetailsService;
+import ru.skypro.homework.validator.Validator;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
-  private final UserDetailsManager manager;
+  private final CustomUserDetailsService manager;
 
   private final PasswordEncoder encoder;
-  private final Logger log = LoggerFactory.getLogger(this.getClass());
-  public AuthServiceImpl(UserDetailsManager manager, PasswordEncoder passwordEncoder) {
+
+  public AuthServiceImpl(CustomUserDetailsService manager, PasswordEncoder passwordEncoder) {
     this.manager = manager;
     this.encoder = passwordEncoder;
   }
 
   @Override
   public boolean login(String userName, String password) {
-    if (!manager.userExists(userName)) {
-      return false;
+    Validator.checkValidateString(password);
+    if (!manager.userExists(Validator.checkValidateString(userName))) {
+      throw new NotFoundException();
     }
     UserDetails userDetails = manager.loadUserByUsername(userName);
     return encoder.matches(password, userDetails.getPassword());
   }
 
   @Override
-  public boolean register(RegisterReq registerReq, Role role) {
-    if (manager.userExists(registerReq.getUsername())) {
+  public boolean register(RegisterReq registerReq) {
+    if (manager.userExists(Validator.checkValidateObj(registerReq).getUsername())) {
       return false;
     }
-    manager.createUser(
-        User.builder()
-            .passwordEncoder(this.encoder::encode)
-            .password(registerReq.getPassword())
-            .username(registerReq.getUsername())
-            .roles(role.name())
-            .build());
+    registerReq.setUsername(Validator.checkValidateEmail(registerReq.getUsername()));
+    registerReq.setPassword(Validator.checkValidatePassword(registerReq.getPassword()));
+    registerReq.setPhone(Validator.checkValidatePhone(registerReq.getPhone(), 7));
+    User user = UserMapper.mapFromRegister(registerReq);
+    user.setRole(Role.USER);
+    manager.createUser(UserMapper.mapToCustomUserDetails(user));
     return true;
-  }
-  /**
-   * Проверка авторизации текущего пользователя
-   *
-   * @return true если авторизован {@link boolean}
-   */
-  // дописывать
-  @Override
-  public boolean isAuthorized(ru.skypro.homework.model.User user, Authentication authentication) {
-    return false;
-  }
-  // дописывать
-  @Override
-  public boolean isAuthorized(Authentication authentication) {
-    return false;
-  }
-
-  @Override
-  public void changePassword(String oldPassword, String newPassword, Authentication authentication) {
-    log.info("changePassword " );
-    isAuthorized(authentication);
-    manager.changePassword(oldPassword, newPassword);
   }
 }

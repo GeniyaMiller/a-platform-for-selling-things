@@ -14,8 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.ads.*;
-import ru.skypro.homework.service.AdsService;
-import ru.skypro.homework.service.ImageService;
+import ru.skypro.homework.service.impl.AdsService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -28,38 +27,9 @@ import java.io.IOException;
 public class AdsController {
 
     private final AdsService adsService;
-    private final ImageService imageService;
-
-    public AdsController(AdsService adsService, ImageService imageService) {
-        this.adsService = adsService;
-        this.imageService = imageService;
-    }
 
 
-    /**
-     * GET /ads/{id}/comments : getComments
-     *
-     * @param id (required)
-     * @return OK (status code 200)
-     * or Not Found (status code 404)
-     */
-    @Operation(
-            operationId = "getComments",
-            summary = "Получить комментарии объявления",
-            tags = {"Комментарии"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = ResponseWrapperCommentDto.class))
-                    }),
-                    @ApiResponse(responseCode = "404", description = "NotFound")
-            }
-    )
-    @GetMapping("/{id}/comments")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ResponseWrapperCommentDto> getComments(@PathVariable("id") Integer id) {
-        ResponseWrapperCommentDto comments = new ResponseWrapperCommentDto(adsService.getAdsComments(id));
-        return ResponseEntity.ok(comments);
-    }
+    public AdsController(AdsService adsService) { this.adsService = adsService; }
 
     /**
      * GET /ads
@@ -76,9 +46,8 @@ public class AdsController {
             }
     )
     @GetMapping()
-    public ResponseEntity<ResponseWrapperAdsDto> getAllAds(@RequestParam(required = false) String title) {
-        ResponseWrapperAdsDto ads = new ResponseWrapperAdsDto(adsService.getAllAds(title));
-        return ResponseEntity.ok(ads);
+    public ResponseEntity<?> getAllAds() {
+        return ResponseEntity.ok(adsService.getAll());
     }
 
     /**
@@ -104,12 +73,13 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
-    @PostMapping()
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<AdsDto> addAds(@NotNull Authentication authentication,
-                                         @RequestPart("properties") CreateAdsDto properties,
-                                         @RequestPart("image") MultipartFile image) throws IOException {
-        return ResponseEntity.ok(adsService.save(properties,authentication, image));
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AdsDto> addAds(@RequestPart("image") MultipartFile imageFile,
+                                         @Valid
+                                         @RequestPart("properties") CreateAdsDto createAds,
+                                         Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(adsService.create(imageFile, createAds, authentication));
     }
 
     /**
@@ -131,8 +101,8 @@ public class AdsController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<FullAdsDto> getAds(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(adsService.getFullAds(id));
+    public ResponseEntity<?> getAds(@PathVariable Integer id) {
+        return ResponseEntity.ok(adsService.getById(id));
     }
 
     /**
@@ -154,10 +124,16 @@ public class AdsController {
             }
     )
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> removeAd(Authentication authentication, @PathVariable("id") Integer id) {
-        adsService.removeAds(id, authentication);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @PreAuthorize("@adsService.getById(#id).getEmail()" +
+            "== authentication.principal.username or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> removeAd(@PathVariable Integer id) {
+        adsService.remove(id);
+        return ResponseEntity.ok().build();
+    }
+    @Operation(hidden = true)
+    @GetMapping(value = "/search")
+    public ResponseEntity<?> searchByTitle(@RequestParam(required = false) String title) {
+        return ResponseEntity.ok(adsService.search(title));
     }
 
     /**
@@ -184,12 +160,12 @@ public class AdsController {
             }
     )
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<AdsDto> updateAds(@PathVariable("id") Integer id,
-                                            @Valid @RequestBody CreateAdsDto createAds,
-                                            Authentication authentication) {
-        return ResponseEntity.ok(adsService.updateAds(id, createAds, authentication));
+    @PreAuthorize("@adsService.getById(#id).getEmail()" +
+            "== authentication.principal.username or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAds) {
+        return ResponseEntity.ok(adsService.update(id, createAds));
     }
+
 
     /**
      * GET /ads/me : getAdsMe
@@ -213,110 +189,151 @@ public class AdsController {
             }
     )
     @GetMapping("/me")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
-        ResponseWrapperAdsDto ads = new  ResponseWrapperAdsDto(adsService.getAdsByUser(authentication.getName()));
-        return ResponseEntity.ok(ads);
+    public ResponseEntity<?> getAdsMe(Authentication authentication) {
+        return ResponseEntity.ok(adsService.getMeAll(authentication));
     }
 
-    @GetMapping(value = "/{id}/getImage", produces = {MediaType.IMAGE_PNG_VALUE})
-    public ResponseEntity<byte[]> getImage(@PathVariable int id) throws IOException {
-        return ResponseEntity.ok(imageService.getImage(id));
-    }
+    /**
+     * GET /ads/{id}/comments : getComments
+     *
+     * @param id (required)
+     * @return OK (status code 200)
+     * or Not Found (status code 404)
+     */
+    @Operation(
+            operationId = "getComments",
+            summary = "Получить комментарии объявления",
+            tags = {"Комментарии"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = {
+                            @Content(mediaType = "*/*", schema = @Schema(implementation = ResponseWrapperCommentDto.class))
+                    }),
+                    @ApiResponse(responseCode = "404", description = "NotFound")
+            }
+    )
+
 
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<byte[]> updateAdsImage(@PathVariable Integer id, @RequestParam MultipartFile image){
-        return null;
+    @PreAuthorize("@adsService.getById(#id).getEmail()" +
+            "== authentication.principal.username or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> updateImage(@PathVariable Integer id, @RequestParam("image") MultipartFile avatar) {
+        return ResponseEntity.ok(adsService.updateImage(id, avatar));
     }
 
-    /**
-     * POST /ads/{id}/comments : addComment
-     *
-     * @param adsId (required)
-     * @param comment (required)
-     * @return Ok (status code 200)
-     * or Not Found (status code 404)
-     * or Forbidden (status code 403)
-     * or Unauthorized (status code 401)
-     */
-    @Operation(
-            operationId = "addComment",
-            summary = "Добавить комментарий к объявлению",
-            tags = {"Комментарии"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = CommentDto.class))
-                    }),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
-    @PostMapping("/{adsId}/comments")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CommentDto> addComment (@PathVariable Integer adsId, @RequestBody CommentDto comment,
-                                                  Authentication authentication) {
-        return ResponseEntity.ok(adsService.addComment(adsId, comment, authentication));
+
+
+
+
+    @Operation(hidden = true)
+    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public byte[] showImage(@PathVariable("id") Integer id) {
+        return adsService.showImage(id);
     }
 
-    /**
-     * DELETE /ads/{adId}/comments/{commentId} : deleteComment
-     *
-     * @param adsId (required)
-     * @param commentId (required)
-     * @return Ok (status code 200)
-     * or Not Found (status code 404)
-     * or Forbidden (status code 403)
-     * or Unauthorized (status code 401)
-     */
-    @Operation(
-            operationId = "deleteComment",
-            summary = "Удалить комментарий к объявлению",
-            tags = {"Комментарии"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
 
-    @DeleteMapping("/{adsId}/comments/{commentId}")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> deleteComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, Authentication authentication){
-       adsService.deleteComment(adsId, commentId, authentication);
-       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
+//    @GetMapping("/{id}/comments")
+//    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+//    public ResponseEntity<ResponseWrapperCommentDto> getComments(@PathVariable("id") Integer id) {
+//        ResponseWrapperCommentDto comments = new ResponseWrapperCommentDto(adsService.getAdsComments(id));
+//        return ResponseEntity.ok(comments);
+//    }
 
-    /**
-     * PATCH /ads/{adId}/comments/{commentId} : updateComment
-     *
-     * @param adsId (required)
-     * @param commentId (required)
-     * @param comment (required)
-     * @return Ok (status code 200)
-     * or Not Found (status code 404)
-     * or Forbidden (status code 403)
-     * or Unauthorized (status code 401)
-     */
-    @Operation(
-            operationId = "updateComment",
-            summary = "Обновить комментарий к объявлению",
-            tags = {"Комментарии"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = CommentDto.class))
-                    }),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
-    @PatchMapping("/{adsId}/comments/{commentId}")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CommentDto> updateComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, @RequestBody CommentDto comment, Authentication authentication) {
-        return ResponseEntity.ok(adsService.updateComment(adsId, commentId, comment, authentication));
-    }
+
+
+//    @GetMapping(value = "/{id}/getImage", produces = {MediaType.IMAGE_PNG_VALUE})
+//    public ResponseEntity<byte[]> getImage(@PathVariable int id) throws IOException {
+//        return ResponseEntity.ok(imageService.getImage(id));
+//    }
+
+
+
+//    /**
+//     * POST /ads/{id}/comments : addComment
+//     *
+//     * @param adsId (required)
+//     * @param comment (required)
+//     * @return Ok (status code 200)
+//     * or Not Found (status code 404)
+//     * or Forbidden (status code 403)
+//     * or Unauthorized (status code 401)
+//     */
+//    @Operation(
+//            operationId = "addComment",
+//            summary = "Добавить комментарий к объявлению",
+//            tags = {"Комментарии"},
+//            responses = {
+//                    @ApiResponse(responseCode = "200", description = "OK", content = {
+//                            @Content(mediaType = "*/*", schema = @Schema(implementation = CommentDto.class))
+//                    }),
+//                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+//                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+//                    @ApiResponse(responseCode = "404", description = "Not Found")
+//            }
+//    )
+//    @PostMapping("/{adsId}/comments")
+//    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+//    public ResponseEntity<CommentDto> addComment (@PathVariable Integer adsId, @RequestBody CommentDto comment,
+//                                                  Authentication authentication) {
+//        return ResponseEntity.ok(adsService.addComment(adsId, comment, authentication));
+//    }
+//
+//    /**
+//     * DELETE /ads/{adId}/comments/{commentId} : deleteComment
+//     *
+//     * @param adsId (required)
+//     * @param commentId (required)
+//     * @return Ok (status code 200)
+//     * or Not Found (status code 404)
+//     * or Forbidden (status code 403)
+//     * or Unauthorized (status code 401)
+//     */
+//    @Operation(
+//            operationId = "deleteComment",
+//            summary = "Удалить комментарий к объявлению",
+//            tags = {"Комментарии"},
+//            responses = {
+//                    @ApiResponse(responseCode = "200", description = "OK"),
+//                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+//                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+//                    @ApiResponse(responseCode = "404", description = "Not Found")
+//            }
+//    )
+//
+//    @DeleteMapping("/{adsId}/comments/{commentId}")
+//    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+//    public ResponseEntity<Void> deleteComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, Authentication authentication){
+//       adsService.deleteComment(adsId, commentId, authentication);
+//       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+//    }
+//
+//    /**
+//     * PATCH /ads/{adId}/comments/{commentId} : updateComment
+//     *
+//     * @param adsId (required)
+//     * @param commentId (required)
+//     * @param comment (required)
+//     * @return Ok (status code 200)
+//     * or Not Found (status code 404)
+//     * or Forbidden (status code 403)
+//     * or Unauthorized (status code 401)
+//     */
+//    @Operation(
+//            operationId = "updateComment",
+//            summary = "Обновить комментарий к объявлению",
+//            tags = {"Комментарии"},
+//            responses = {
+//                    @ApiResponse(responseCode = "200", description = "OK", content = {
+//                            @Content(mediaType = "*/*", schema = @Schema(implementation = CommentDto.class))
+//                    }),
+//                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+//                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+//                    @ApiResponse(responseCode = "404", description = "Not Found")
+//            }
+//    )
+//    @PatchMapping("/{adsId}/comments/{commentId}")
+//    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+//    public ResponseEntity<CommentDto> updateComment (@PathVariable("adsId") Integer adsId, @PathVariable("commentId") Integer commentId, @RequestBody CommentDto comment, Authentication authentication) {
+//        return ResponseEntity.ok(adsService.updateComment(adsId, commentId, comment, authentication));
+//    }
 
 }

@@ -7,11 +7,8 @@ import ru.skypro.homework.model.User;
 
 public interface AuthService {
     boolean login(String userName, String password);
-    boolean register(RegisterReq registerReq, Role role);
+    boolean register(RegisterReq registerReq);
 
 
-    boolean isAuthorized(User user, Authentication authentication);
-    boolean isAuthorized( Authentication authentication);
 
-    void changePassword(String oldPassword, String newPassword, Authentication authentication);
 }

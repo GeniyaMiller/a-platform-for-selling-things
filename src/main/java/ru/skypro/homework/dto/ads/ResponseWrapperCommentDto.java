@@ -3,18 +3,13 @@ package ru.skypro.homework.dto.ads;
 import lombok.Data;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 public class ResponseWrapperCommentDto {
 
     private int count;
 
-    private Collection<CommentDto> results;
-
-    public ResponseWrapperCommentDto(Collection<CommentDto> results) {
-        this.count = results.size();
-        this.results = results;
-    }
-
+    private List<CommentDto> results;
 
 }
