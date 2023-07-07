@@ -20,9 +20,9 @@ public class AuthServiceImpl implements AuthService {
 
   private final PasswordEncoder encoder;
 
-  public AuthServiceImpl(CustomUserDetailsService manager, PasswordEncoder encoder) {
+  public AuthServiceImpl(CustomUserDetailsService manager, PasswordEncoder passwordEncoder) {
     this.manager = manager;
-    this.encoder = encoder;
+    this.encoder = passwordEncoder;
   }
 
   @Override
