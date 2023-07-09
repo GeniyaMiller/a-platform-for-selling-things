@@ -27,8 +27,6 @@ public class WebSecurityConfig extends GlobalMethodSecurityConfiguration {
           "/webjars/**",
           "/ads",
           "/ads/image/**",
-          "/ads/search",
-          "/users/me/image",
           "/login",
           "/register"
   };
