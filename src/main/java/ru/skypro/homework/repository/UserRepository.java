@@ -9,18 +9,9 @@ import ru.skypro.homework.model.User;
 import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
-    int countByEmail(String email);
 
 
-    User getUserById(String name);
+    boolean existsByUsername(String username);
 
-    String getUserByFirstName(Integer userId);
-
-    String getAvatarUserById(Integer userId);
-
-    @Query(nativeQuery = true, value = "select user_profile_id from profile_user where email like ?1")
-    Integer getUserProfileId(String name);
-    User findByEmailAndPassword(String username, String password);
-
-    Optional<User> findByEmail(String name);
+    Optional<User> findByUsername(String username);
 }
