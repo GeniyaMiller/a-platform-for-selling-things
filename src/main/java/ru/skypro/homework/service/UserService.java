@@ -1,138 +1,66 @@
 package ru.skypro.homework.service;
 
-import org.springframework.dao.DataAccessException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.Exception.CurrentPasswordNotEqualsException;
-import ru.skypro.homework.Exception.UserAlreadyCreatedException;
+import org.springframework.web.multipart.MultipartFile;
+
 import ru.skypro.homework.Exception.UserNotFoundException;
 import ru.skypro.homework.dto.auth.NewPassword;
-import ru.skypro.homework.dto.profile.CreateUserDto;
-import ru.skypro.homework.dto.profile.ResponseWrapperUserDto;
+import ru.skypro.homework.dto.profile.CustomUserDetails;
 import ru.skypro.homework.dto.profile.UserDto;
-
-import ru.skypro.homework.mapper.CreateUserDtoMapper;
-import ru.skypro.homework.mapper.UserDtoMapper;
+import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.model.User;
 import ru.skypro.homework.repository.UserRepository;
+import ru.skypro.homework.validator.Validator;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final CreateUserDtoMapper createUserDtoMapper;
-    private final UserDtoMapper userDtoMapper;
-    private final FileService fileService;
+    private final PasswordEncoder encoder;
 
-    public UserService(UserRepository userRepository,
-                       CreateUserDtoMapper createUserDtoMapper,
-                       UserDtoMapper userDtoMapper,
-                       FileService fileService) {
+    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
         this.userRepository = userRepository;
-        this.createUserDtoMapper = createUserDtoMapper;
-        this.userDtoMapper = userDtoMapper;
-        this.fileService = fileService;
+        this.encoder = encoder;
     }
-    public CreateUserDto createUser(CreateUserDto createUserDto) {
 
-        int countUser = userRepository.countByEmail(createUserDto.getUsername());
-        if (countUser > 0) {
-            throw new UserAlreadyCreatedException(createUserDto.getUsername());
+    public UserDto findByUsername(Authentication authentication) {
+        return UserMapper.mapToDTO(UserMapper.customUserDetailsToUser((CustomUserDetails) authentication.getPrincipal()));
+    }
+
+    public void changePassword(NewPassword newPassword, Authentication authentication) {
+        Validator.checkValidateObj(newPassword);
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+        if (!encoder.matches(newPassword.getCurrentPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Authentication exception");
         }
-
-        User user = createUserDtoMapper.toModel(createUserDto);
-        User createdUser = userRepository.save(user);
-        return createUserDtoMapper.toDto(createdUser);
+        user.setPassword(encoder.encode(newPassword.getNewPassword()));
+        userRepository.save(UserMapper.customUserDetailsToUser(user));
     }
 
-    public ResponseWrapperUserDto getUsers() {
-        List<User> usersList = userRepository.findAll();
-        if (usersList.size() == 0) {
-            return null;
-        }
-
-        ResponseWrapperUserDto wrapperUserDto = new ResponseWrapperUserDto();
-        wrapperUserDto.setCount(usersList.size());
-        wrapperUserDto.setResult(userDtoMapper.toUserDtoList(usersList).toArray(new UserDto[0]));
-        return wrapperUserDto;
-    }
-    public UserDto getMeByLogin(String login) {
-        User user = getUserByLogin(login);
-        return userDtoMapper.toDto(user);
-    }
-    public User getUserByLogin(String userEmail) {
-        return userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+    public UserDto update(UserDto userDto) {
+        User user = userRepository.findById(userDto.getId()).orElseThrow(UserNotFoundException::new);
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setPhone(userDto.getPhone());
+        userRepository.save(user);
+        return userDto;
     }
 
-    public UserDto updateUser(String userLogin,UserDto updatedUser) {
-        User user = getUserByLogin(userLogin);
-        user.setFirstName(updatedUser.getFirstName());
-        user.setLastName(updatedUser.getLastName());
-        user.setPhone(updatedUser.getPhone());
-        return userDtoMapper.toDto(userRepository.save(user));
-    }
-    public NewPassword changePassword(
-            String userLogin,
-            NewPassword newPasswordDto
-    ) {
-        User userEntity = getUserByLogin(userLogin);
-
-        if (!userEntity.getPassword()
-                .equals(newPasswordDto.getCurrentPassword())
-        ) {
-            throw new CurrentPasswordNotEqualsException();
-        }
-
-        userEntity.setPassword(newPasswordDto.getNewPassword());
-        return newPasswordDto;
-    }
-    public UserDto findById(int userId) {
-        return userDtoMapper.toDto(
-                userRepository.findById(userId)
-                        .orElseThrow(UserNotFoundException::new)
-        );
-    }
-    public boolean login(
-            String username,
-            String password
-    ) {
-        User user = userRepository.findByEmailAndPassword(
-                username,
-                password
-        );
-
-        return null != user;
-    }
-    public boolean updateUserAvatarPath(
-            String userLogin,
-            String filePath
-    ) {
-        User user = getUserByLogin(userLogin);
-        Optional<String> optionalAvatar = Optional.ofNullable(user.getAvatar());
-
-        optionalAvatar.ifPresent(oldAvatar -> {
-                    if (!oldAvatar.isEmpty()) {
-                        try {
-                            fileService.removeFileByPath(oldAvatar);
-                        } catch (IOException ignored) {}
-                    }
-                }
-        );
-
-        user.setAvatar(filePath);
-
-        try {
-            userRepository.save(user);
-        } catch (DataAccessException e) {
-            return false;
-        }
-
+    public boolean updateAvatar(Authentication authentication, MultipartFile avatar) throws IOException {
+        User user = UserMapper.customUserDetailsToUser((CustomUserDetails) authentication.getPrincipal());
+        user.setImage(Validator.checkValidateObj(avatar).getBytes());
+        userRepository.save(user);
         return true;
     }
 
+    public byte[] showAvatarOnId(Integer id) {
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new).getImage();
+    }
 
 
 }

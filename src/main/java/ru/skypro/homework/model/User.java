@@ -1,9 +1,11 @@
 package ru.skypro.homework.model;
 
 import lombok.Data;
+import ru.skypro.homework.dto.profile.Role;
 
 import javax.persistence.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -12,12 +14,18 @@ import java.util.Objects;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String email;
-    private String avatar;
-    private String password;
+    private Integer id;
+    private String username;
     private String firstName;
     private String lastName;
     private String phone;
-    private String role = "USER";
+    private byte[] image;
+    private String password;
+    private Boolean enabled;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    @OneToMany(mappedBy = "author", cascade = {CascadeType.REMOVE})
+    private List<Ads> ads;
+    @OneToMany(mappedBy = "author", cascade = {CascadeType.REMOVE})
+    private List<Comment> comments;
 }

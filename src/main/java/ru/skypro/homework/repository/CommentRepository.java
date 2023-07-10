@@ -6,12 +6,15 @@ import ru.skypro.homework.model.Ads;
 import ru.skypro.homework.model.Comment;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    Collection<Comment> getByAdsId(Integer adsId);
+    List<Comment> findAllByAdsPk(Integer pk);
 
-    Optional<Comment> getByAdsIdAndId(Integer adsId, Integer commentId);
+    Optional<Comment> findByPkAndAdsPk(Integer pk, Integer adsPk);
+
+    void deleteByPkAndAdsPk(Integer pk, Integer adsPk);
 }

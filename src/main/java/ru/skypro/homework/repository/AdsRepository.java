@@ -6,18 +6,14 @@ import org.springframework.stereotype.Repository;
 import ru.skypro.homework.model.Ads;
 
 import java.util.Collection;
+import java.util.List;
 
 @Repository
 public interface AdsRepository extends JpaRepository<Ads, Integer> {
 
     Collection<Ads> findByTitleContainsOrderByTitle(String title);
 
-    @Query(nativeQuery = true, value = "select user_id from ads where id = ?1")
-    Integer getUserProfileId(Integer adsId);
+    List<Ads> findAllByAuthorId(Integer authorId);
 
-    Collection<Ads> findByAuthorId(int authorId);
-
-    void deleteAllById(Integer adsId);
-
-    Ads getAdsById(Integer adsId);
+    List<Ads> findAllByTitleContainsIgnoreCase(String title);
 }
