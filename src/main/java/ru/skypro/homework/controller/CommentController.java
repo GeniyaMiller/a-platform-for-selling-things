@@ -10,22 +10,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.ads.CommentDto;
 import ru.skypro.homework.dto.ads.ResponseWrapperCommentDto;
-import ru.skypro.homework.service.CommentsService;
+import ru.skypro.homework.service.CommentService;
 
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/ads")
 public class CommentController {
-    private final CommentsService commentsService;
+    private final CommentService commentService;
 
-    public CommentController(CommentsService commentsService) {
-        this.commentsService = commentsService;
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
     }
 
     @Operation(summary = "Получить комментарии объявления", tags = "Комментарии")
     @GetMapping("/{id}/comments")
     public ResponseWrapperCommentDto getComments(@PathVariable Integer id) {
-        return commentsService.getAll(id);
+        return commentService.getAll(id);
     }
 
     @Operation(
@@ -41,7 +41,7 @@ public class CommentController {
     )
     @PostMapping("/{id}/comments")
     public CommentDto addComment(@PathVariable Integer id, @RequestBody CommentDto commentDTO, Authentication authentication) {
-        return commentsService.addComment(id, commentDTO, authentication);
+        return commentService.addComment(id, commentDTO, authentication);
     }
 
     @Operation(
@@ -53,11 +53,11 @@ public class CommentController {
                     @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
             }
     )
-    @PreAuthorize("@commentsService.getById(#commentId).author.username" +
+    @PreAuthorize("@commentService.getById(#commentId).author.username" +
             "== authentication.principal.username or hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{adId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable("commentId") Integer commentId, @PathVariable("adId") Integer adId) {
-        commentsService.deleteComment(commentId, adId);
+        commentService.deleteComment(commentId, adId);
         return ResponseEntity.ok().build();
     }
 
@@ -72,10 +72,10 @@ public class CommentController {
                     @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
             }
     )
-    @PreAuthorize("@commentsService.getById(#commentId).author.username" +
+    @PreAuthorize("@commentService.getById(#commentId).author.username" +
             "== authentication.principal.username or hasRole('ROLE_ADMIN')")
     @PatchMapping(value = "/{adId}/comments/{commentId}")
     public CommentDto updateComment(@PathVariable("commentId") Integer commentId, @PathVariable("adId") Integer adId, @RequestBody CommentDto commentDto) {
-        return commentsService.update(commentId, adId, commentDto);
+        return commentService.update(commentId, adId, commentDto);
     }
 }
