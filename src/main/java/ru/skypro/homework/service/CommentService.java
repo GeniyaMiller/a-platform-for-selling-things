@@ -18,11 +18,11 @@ import ru.skypro.homework.validator.Validator;
 import java.util.stream.Collectors;
 
 @Service
-public class CommentsService {
+public class CommentService {
     private final CommentRepository commentRepository;
     private final AdsRepository adsRepository;
 
-    public CommentsService(CommentRepository commentRepository, AdsRepository adsRepository) {
+    public CommentService(CommentRepository commentRepository, AdsRepository adsRepository) {
         this.commentRepository = commentRepository;
         this.adsRepository = adsRepository;
     }
