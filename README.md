@@ -22,3 +22,8 @@ Back-end часть проекта платформы по продаже вещ
 # Работа БД:
 - PostgreSQL
 - Liquibase
+
+# Проект писала команда в составе:
+- Евгения Миллер https://github.com/GeniyaMiller
+- Алексей Устюгов https://github.com/Alexust11
+- Юлия Кобзева https://github.com/JuliaKobzeva
